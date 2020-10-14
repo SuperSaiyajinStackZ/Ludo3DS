@@ -1,6 +1,6 @@
 # Ludo3DS
 <p align="center">
-	<a href="https://github.com/SuperSaiyajinStackZ/Ludo3DS/releases/latest"><img src="https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/3ds/app/banner.png"></a><br>
+	<a href="https://github.com/SuperSaiyajinStackZ/Ludo3DS/releases/latest"><img src="https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/3ds/app/Banner.png"></a><br>
 	<b>Ludo3DS ist ein 'Work in progress' `Ludo` klon für den Nintendo 3DS.</b><br>
 </p>
 
