@@ -99,6 +99,10 @@ public:
 
 	/* Wiedergebe ob das Spiel gültig ist. */
 	bool validLoaded() const { return this->ValidGame; };
+
+	/* Computer part. */
+	bool GetAI() const { return this->UseAI; }
+	void SetAI(bool AI) { this->UseAI = AI; }
 private:
 	std::unique_ptr<Player> Players[4];
 
@@ -106,7 +110,7 @@ private:
 		Variablen für das Spiel.
 	*/
 	uint8_t CurrentPlayer = 0, FigurAmount = 1, PlayerAmount = 2;
-	bool ValidGame = false;
+	bool ValidGame = false, UseAI = false;
 
 	std::unique_ptr<uint8_t[]> GameData = nullptr; // Spiel-Daten Buffer.
 };

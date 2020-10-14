@@ -43,7 +43,6 @@ private:
 	void DrawPlayers() const;
 	void DrawSelection(uint8_t selection) const;
 	void DrawPlayer(uint8_t player) const;
-	void DrawFigur(uint8_t player, int x, int y) const;
 	void DisplaySub(void) const;
 	void DisplayGame(void) const;
 

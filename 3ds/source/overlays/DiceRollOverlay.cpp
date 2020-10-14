@@ -76,6 +76,9 @@ uint8_t Overlays::RollDiceOverlay(bool AIRoll) {
 			}
 
 		} else {
+			hidScanInput();
+			if (hidKeysDown() & KEY_A) doOut = true; // Lasse die Animation mit A überspringen.
+
 			/* Würfel-Teil. */
 			if (diceDl > 0) {
 				diceDl--;

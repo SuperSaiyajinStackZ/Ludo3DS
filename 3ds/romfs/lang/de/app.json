@@ -9,10 +9,12 @@
 	"DEV_BY": "Ludo3DS wurde entwickelt von: SuperSaiyajinStackZ",
 	"DEVELOPING_APP": "- Für das entwickeln dieser Anwendung.",
 	"DEVKITPRO": "- Für devkitARM, Libctru, Citro2D und Citro3D.",
+	"ENTER_FIGUREAMOUNT": "Gebe die Figurenanzahl ein.\n1 - 4 Figuren sind maximal erlaubt.",
 	"ENTER_PLAYERAMOUNT": "Gebe die Spieleranzahl ein.\n2 - 4 Spieler sind maximal erlaubt.",
 	"EXIT_GAME": "Spiel Beenden",
 	"EXIT_GAME_PRMPT": "Möchtest du das Spiel beenden?",
 	"FIGURE_AMOUNT": "Figurenanzahl",
+	"FIGUREAMOUNT_PRMPT": "Falls du die Figurenanzahl änderst\nwird das komplette Spiel neu gestartet.\nDas bedeutet, dass du deinen kompletten Fortschritt verlierst.\nMöchtest du fortfahren?",
 	"GAME_INSTR_1": "Drücke \uE002 um zu Würfeln.\nDrücke START um das Unter-Menü anzuzeigen.",
 	"GAME_INSTR_2": "Drücke \uE000 um eine Figur zu wählen.\nDrücke \uE052 | \uE053 | \uE07B | \uE07C um die Figur zu wechseln.\nDrücke START um das Unter-Menü anzuzeigen.",
 	"GAME_PAUSED": "Spiel pausiert.",
@@ -25,6 +27,7 @@
 	"NO": "Nein",
 	"NOT_IMPLEMENTED_YET": "Dies ist noch nicht implementiert.",
 	"NOT_VALID_GAME": "Dies ist kein gültiges Spiel.",
+	"PLAY_AGAINST_COMPUTER": "Möchtest du gegen Computer(s) spielen?",
 	"PLAYER": "Spieler",
 	"PLAYER_AMOUNT": "Spieleranzahl",
 	"PLAYER_WON": "Spieler %i hat gewonnen!",
@@ -44,6 +47,7 @@
 	"SHOW_RULES": "Regeln anzeigen",
 	"STACKZ_PRESENTS": "SuperSaiyajinStackZ Präsentiert...",
 	"STOP_DICE": "Drücke \uE000 um den Würfel zu stoppen.",
+	"TOGGLE_AI": "Computer umschalten",
 	"UNIVERSAL_CORE": "- Für Universal-Core.",
 	"YES": "Ja"
 }

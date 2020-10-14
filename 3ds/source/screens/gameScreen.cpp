@@ -32,33 +32,6 @@ extern bool exiting;
 extern bool touching(touchPosition touch, Structs::ButtonPos button);
 
 /*
-	Zeichne eine Figur eines Spielers.
-
-	uint8_t player: Der Spieler-Index.
-	int x: Die X-position, wo gezeichnet werden soll.
-	int y: Die Y-Position, wo gezeichnet werden soll.
-*/
-void GameScreen::DrawFigur(uint8_t player, int x, int y) const {
-	switch(player) {
-		case 0:
-			GFX::DrawSprite(sprites_chip_p1_idx, x, y);
-			break;
-
-		case 1:
-			GFX::DrawSprite(sprites_chip_p2_idx, x, y);
-			break;
-
-		case 2:
-			GFX::DrawSprite(sprites_chip_p3_idx, x, y);
-			break;
-
-		case 3:
-			GFX::DrawSprite(sprites_chip_p4_idx, x, y);
-			break;
-	}
-}
-
-/*
 	Zeichne alle Figuren eines Spielers.
 
 	uint8_t player: Der Spieler-Index.
@@ -70,18 +43,18 @@ void GameScreen::DrawPlayer(uint8_t player) const {
 
 			/* 0 --> Startfeld. */
 			if (position == 0) {
-				this->DrawFigur(player,
+				GFX::DrawFigure(player,
 					this->PlayerField[(player * 4) + figur].x,
 					this->PlayerField[(player * 4) + figur].y);
 
 			} else if (position > 0 && position < 41) {
-				this->DrawFigur(player,
+				GFX::DrawFigure(player,
 					this->MainField[GameHelper::PositionConvert(player, position) - 1].x,
 					this->MainField[GameHelper::PositionConvert(player, position) - 1].y);
 
 			/* Falls wir in den Eingangs-Bereich kommen. */
 			} else if (position > 40) {
-				this->DrawFigur(player,
+				GFX::DrawFigure(player,
 					this->EingangField[(player * 4) + (position - 41)].x,
 					this->EingangField[(player * 4) + (position - 41)].y);
 			}
@@ -124,6 +97,12 @@ void GameScreen::DrawSelection(uint8_t selection) const {
 GameScreen::GameScreen() {
 	this->currentGame = std::make_unique<Game>(4, 4);
 	CoreHelper::GenerateSeed();
+
+	const uint8_t pAmount = KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), 2);
+	const uint8_t fAmount = KBD::SetAmount(4, Lang::get("ENTER_FIGUREAMOUNT"), 1);
+	this->currentGame = std::make_unique<Game>(pAmount, fAmount);
+
+	this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
 }
 
 /*
@@ -206,14 +185,18 @@ void GameScreen::DisplaySub(void) const {
 	}
 
 	/* Schaltflächen Text. */
-	Gui::DrawStringCentered(-80, this->subBtn[0].y + 10, 0.6f, TEXT_COLOR, Lang::get("LOAD_GAME"));
-	Gui::DrawStringCentered(-80, this->subBtn[1].y + 10, 0.6f, TEXT_COLOR, Lang::get("SAVE_GAME"));
-	Gui::DrawStringCentered(-80, this->subBtn[2].y + 10, 0.6f, TEXT_COLOR, Lang::get("EXIT_GAME"));
-	Gui::DrawStringCentered(-80, this->subBtn[3].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_RULES"));
-	Gui::DrawStringCentered(-80, this->subBtn[4].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_CREDITS"));
+	Gui::DrawStringCentered(-80, this->subBtn[0].y + 10, 0.6f, TEXT_COLOR, Lang::get("LOAD_GAME"), 135);
+	Gui::DrawStringCentered(-80, this->subBtn[1].y + 10, 0.6f, TEXT_COLOR, Lang::get("SAVE_GAME"), 135);
+	Gui::DrawStringCentered(-80, this->subBtn[2].y + 10, 0.6f, TEXT_COLOR, Lang::get("EXIT_GAME"), 135);
+	Gui::DrawStringCentered(-80, this->subBtn[3].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_RULES"), 135);
+	Gui::DrawStringCentered(-80, this->subBtn[4].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_CREDITS"), 135);
 
-	Gui::DrawStringCentered(80, this->subBtn[5].y + 10, 0.6f, TEXT_COLOR, Lang::get("CHANGE_LANGUAGE"));
-	Gui::DrawStringCentered(80, this->subBtn[6].y + 10, 0.6f, TEXT_COLOR, Lang::get("NEW_GAME"));
+	Gui::DrawStringCentered(80, this->subBtn[5].y + 10, 0.6f, TEXT_COLOR, Lang::get("CHANGE_LANGUAGE"), 135);
+	Gui::DrawStringCentered(80, this->subBtn[6].y + 10, 0.6f, TEXT_COLOR, Lang::get("NEW_GAME"), 135);
+	Gui::DrawStringCentered(80, this->subBtn[7].y + 10, 0.6f, TEXT_COLOR, Lang::get("TOGGLE_AI"), 135);
+	Gui::DrawStringCentered(80, this->subBtn[8].y + 10, 0.6f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT"), 135);
+	Gui::DrawStringCentered(80, this->subBtn[9].y + 10, 0.6f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT"), 135);
+
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
 
@@ -234,6 +217,18 @@ void GameScreen::Draw(void) const {
 	Die HauptLogik des Spiel-Screen's.
 */
 void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
+	/* Falls das Spiel vorbei ist. */
+	if (this->gameOver) {
+		if (Msg::promptMsg(Lang::get("NEXT_GAME"))) {
+			Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
+			this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), this->currentGame->GetFigurAmount());
+			this->gameOver = false;
+
+		} else {
+			exiting = true;
+		}
+	}
+
 	if (hDown & KEY_START) this->isSub = true;
 
 	if (this->isSub) {
@@ -331,6 +326,27 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 					this->isSub = false;
 				}
 				break;
+
+				case 7:
+					/* Computer De-/Aktivieren. */
+					this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
+					break;
+
+				case 8:
+					/* Spieleranzahl verändern. */
+					if (Msg::promptMsg(Lang::get("PLAYERAMOUNT_PRMPT"))) {
+						this->currentGame->InitNewGame((uint8_t)KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), this->currentGame->GetPlayerAmount()), this->currentGame->GetFigurAmount());
+						this->isSub = false;
+					}
+					break;
+
+				case 9:
+					/* Figurenanzahl verändern. */
+					if (Msg::promptMsg(Lang::get("FIGUREAMOUNT_PRMPT"))) {
+						this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), (uint8_t)KBD::SetAmount(4, Lang::get("ENTER_FIGURERAMOUNT"), this->currentGame->GetFigurAmount()));
+						this->isSub = false;
+					}
+					break;
 		}
 	}
 
@@ -387,6 +403,24 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 				this->awaitFigurSelect = false;
 				this->isSub = false;
 			}
+
+		} else if (touching(touch, this->subBtn[7])) {
+			/* Computer De-/Aktivieren. */
+			this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
+
+		} else if (touching(touch, this->subBtn[8])) {
+			/* Spieleranzahl verändern. */
+			if (Msg::promptMsg(Lang::get("PLAYERAMOUNT_PRMPT"))) {
+				this->currentGame->InitNewGame((uint8_t)KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), this->currentGame->GetPlayerAmount()), this->currentGame->GetFigurAmount());
+				this->isSub = false;
+			}
+
+		} else if (touching(touch, this->subBtn[9])) {
+			/* Figurenanzahl verändern. */
+			if (Msg::promptMsg(Lang::get("FIGUREAMOUNT_PRMPT"))) {
+				this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), (uint8_t)KBD::SetAmount(4, Lang::get("ENTER_FIGURERAMOUNT"), this->currentGame->GetFigurAmount()));
+				this->isSub = false;
+			}
 		}
 	}
 }
@@ -397,7 +431,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 	Rolle den Würfel.
 */
 void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
-	if (this->currentGame->GetCurrentPlayer() != 0) {
+	if (this->currentGame->GetAI() && this->currentGame->GetCurrentPlayer() != 0) {
 		this->AIHandle();
 
 	} else {
@@ -519,7 +553,7 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld) {
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
 			Msg::DisplayWaitMsg("Spieler " + std::to_string(this->currentGame->GetCurrentPlayer() + 1) + " hat gewonnen!");
-			exiting = true;
+			this->gameOver = true;
 			return;
 		}
 
@@ -672,7 +706,7 @@ void GameScreen::AIHandle() {
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
 			Msg::DisplayWaitMsg("Spieler " + std::to_string(this->currentGame->GetCurrentPlayer() + 1) + " hat gewonnen!");
-			exiting = true;
+			this->gameOver = true;
 			return;
 		}
 

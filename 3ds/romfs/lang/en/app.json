@@ -9,10 +9,12 @@
 	"DEV_BY": "Ludo3DS got developed by: SuperSaiyajinStackZ",
 	"DEVELOPING_APP": "- For developing this application.",
 	"DEVKITPRO": "- For devkitARM, Libctru, Citro2D and Citro3D.",
+	"ENTER_FIGUREAMOUNT": "Enter the Figureamount.\n1 - 4 Figures are the most allowed amount.",
 	"ENTER_PLAYERAMOUNT": "Enter the Playeramount.\n2 - 4 Players are the most allowed amount.",
 	"EXIT_GAME": "Exit Game",
 	"EXIT_GAME_PRMPT": "Would you like to exit the game?",
 	"FIGURE_AMOUNT": "Figure Amount",
+	"FIGUREAMOUNT_PRMPT": "If you change the Figure amount\nthe game will be fully restarted.\nThat means you will lose all your progress.\nDo you like to continue?",
 	"GAME_INSTR_1": "Press \uE002 to roll the dice.\nPress START to show the sub menu.",
 	"GAME_INSTR_2": "Press \uE000 to select a figure.\nPress \uE052 | \uE053 | \uE07B | \uE07C to switch the figure.\nPress START to show the sub menu.",
 	"GAME_PAUSED": "Game paused.",
@@ -25,6 +27,7 @@
 	"NO": "No",
 	"NOT_IMPLEMENTED_YET": "This is not implemented yet.",
 	"NOT_VALID_GAME": "This is not a valid game.",
+	"PLAY_AGAINST_COMPUTER": "Would you like to play against computer(s)?",
 	"PLAYER": "Player",
 	"PLAYER_AMOUNT": "Player Amount",
 	"PLAYER_WON": "Player %i won!",
@@ -44,6 +47,7 @@
 	"SHOW_RULES": "Show Rules",
 	"STACKZ_PRESENTS": "SuperSaiyajinStackZ Presents...",
 	"STOP_DICE": "Press \uE000 to stop the dice.",
+	"TOGGLE_AI": "Toggle AI",
 	"UNIVERSAL_CORE": "- For Universal-Core.",
 	"YES": "Yes"
 }

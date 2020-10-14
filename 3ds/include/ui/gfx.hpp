@@ -57,7 +57,7 @@ namespace GFX {
 	/* Spritezeug. */
 	void DrawSprite(int index, int x, int y, float ScaleX = 1, float ScaleY = 1);
 
-	void DrawPlayer(uint8_t player, int x, int y);
+	void DrawFigure(uint8_t player, int x, int y);
 	void DrawPlayerSelector(uint8_t player, int x, int y);
 
 	void Dice(uint8_t ergebnis, int x, int y);

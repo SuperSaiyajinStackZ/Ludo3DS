@@ -64,8 +64,24 @@ void GFX::DrawSprite(int index, int x, int y, float ScaleX, float ScaleY) {
 	int x: Die X Position der Figur.
 	int y: Die Y Position der Figur.
 */
-void GFX::DrawPlayer(uint8_t player, int x, int y) {
-	GFX::DrawSprite(sprites_chip_p1_idx + player, x, y);
+void GFX::DrawFigure(uint8_t player, int x, int y) {
+	switch(player) {
+		case 0:
+			GFX::DrawSprite(sprites_chip_p1_idx, x, y);
+			break;
+
+		case 1:
+			GFX::DrawSprite(sprites_chip_p2_idx, x, y);
+			break;
+
+		case 2:
+			GFX::DrawSprite(sprites_chip_p3_idx, x, y);
+			break;
+
+		case 3:
+			GFX::DrawSprite(sprites_chip_p4_idx, x, y);
+			break;
+	}
 }
 
 /*
