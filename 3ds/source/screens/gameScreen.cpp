@@ -552,7 +552,10 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld) {
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
-			Msg::DisplayWaitMsg("Spieler " + std::to_string(this->currentGame->GetCurrentPlayer() + 1) + " hat gewonnen!");
+			char msg[100];
+			snprintf(msg, sizeof(msg), Lang::get("PLAYER_WON").c_str(), this->currentGame->GetCurrentPlayer() + 1);
+			Msg::DisplayWaitMsg(msg);
+
 			this->gameOver = true;
 			return;
 		}
@@ -705,7 +708,10 @@ void GameScreen::AIHandle() {
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
-			Msg::DisplayWaitMsg("Spieler " + std::to_string(this->currentGame->GetCurrentPlayer() + 1) + " hat gewonnen!");
+			char msg[100];
+			snprintf(msg, sizeof(msg), Lang::get("PLAYER_WON").c_str(), this->currentGame->GetCurrentPlayer() + 1);
+			Msg::DisplayWaitMsg(msg);
+
 			this->gameOver = true;
 			return;
 		}
