@@ -229,17 +229,20 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 		}
 	}
 
-	if (hDown & KEY_START) this->isSub = true;
+	/* Nur wenn das Spiel noch nicht vorbei ist. */
+	if (!this->gameOver) {
+		if (hDown & KEY_START) this->isSub = true;
 
-	if (this->isSub) {
-		this->SubLogic(hDown, hHeld, touch);
-
-	} else {
-		if (!this->awaitFigurSelect) {
-			this->RoundLogic(hDown, hHeld);
+		if (this->isSub) {
+			this->SubLogic(hDown, hHeld, touch);
 
 		} else {
-			this->FigureSelection(hDown, hHeld);
+			if (!this->awaitFigurSelect) {
+				this->RoundLogic(hDown, hHeld);
+
+			} else {
+				this->FigureSelection(hDown, hHeld);
+			}
 		}
 	}
 }
