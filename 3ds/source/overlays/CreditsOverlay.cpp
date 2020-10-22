@@ -26,6 +26,8 @@
 
 #include "common.hpp"
 
+extern C2D_SpriteSheet sprites;
+
 /*
 	Zeichne den Credits-Screen.
 */
@@ -40,7 +42,7 @@ static void Draw() {
 	Gui::Draw_Rect(0, 215, 400, 25, BAR_COLOR);
 
 	GFX::DrawSprite(sprites_stackZ_idx, 2, 75);
-	GFX::DrawSprite(sprites_Logo_idx, 140, 56);
+	Gui::DrawSprite(sprites, sprites_Ludo3DS_idx, 165, 55, 0.9, 0.9);
 
 	Gui::DrawStringCentered(0, 1, 0.6f, TEXT_COLOR, Lang::get("CREDITS"));
 	Gui::DrawStringCentered(0, 30, 0.6f, TEXT_COLOR, Lang::get("DEV_BY"), 390);

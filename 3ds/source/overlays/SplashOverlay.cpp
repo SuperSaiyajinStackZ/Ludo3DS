@@ -26,7 +26,7 @@
 
 #include "common.hpp"
 
-#define _SPLASH_X_LOGO_POS 135
+#define _SPLASH_X_LOGO_POS 170
 #define _SPLASH_LOGO_INIT_DELAY 50
 #define _SPLASH_WAIT_DELAY 200
 
@@ -49,7 +49,7 @@ static void Draw(const int &logoPos, const int &fadeAlpha, const uint32_t &year)
 
 	Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("STACKZ_PRESENTS"));
 	GFX::DrawSprite(sprites_stackZ_idx, 2, 75);
-	if (logoPos < 400) GFX::DrawSprite(sprites_Logo_idx, logoPos, 56);
+	if (logoPos < 400) GFX::DrawSprite(sprites_Ludo3DS_idx, logoPos, 35);
 	Gui::DrawStringCentered(0, 217, 0.7f, TEXT_COLOR, "2020 - " + std::to_string(year), 390);
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 
