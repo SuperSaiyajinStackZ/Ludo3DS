@@ -53,7 +53,7 @@ static void Draw(const uint8_t &diceRes, const bool &AI) {
 	Zeige das Würfel-Overlay und wiedergebe ein Würfel-Ergebnis als einen uint8_t.
 */
 uint8_t Overlays::RollDiceOverlay(bool AIRoll) {
-	uint8_t diceRes = CoreHelper::Würfeln(), diceDl = _DICE_DELAY, dl = _AI_ROLL_DL;
+	uint8_t diceRes = CoreHelper::RollDice(), diceDl = _DICE_DELAY, dl = _AI_ROLL_DL;
 	bool doOut = false, AI = AIRoll;
 
 	while(!doOut) {
@@ -96,5 +96,5 @@ uint8_t Overlays::RollDiceOverlay(bool AIRoll) {
 		}
 	}
 
-	return CoreHelper::Würfeln();
+	return CoreHelper::RollDice();
 }

@@ -101,8 +101,8 @@ public:
 	bool validLoaded() const { return this->ValidGame; };
 
 	/* Computer part. */
-	bool GetAI() const { return this->UseAI; }
-	void SetAI(bool AI) { this->UseAI = AI; }
+	bool GetAI() const { return this->UseAI; };
+	void SetAI(bool AI) { this->UseAI = AI; };
 private:
 	std::unique_ptr<Player> Players[4];
 

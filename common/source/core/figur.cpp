@@ -29,7 +29,7 @@
 /*
 	Wiedergebe die Position der Figur.
 */
-uint8_t Figur::GetPosition() const { return this->Position; }
+uint8_t Figur::GetPosition() const { return this->Position; };
 
 /*
 	Setze die Position einer Figur.
@@ -46,24 +46,24 @@ void Figur::SetPosition(uint8_t pos) {
 /*
 	Wiedergebe ob diese Figur benutzt wird.
 */
-bool Figur::GetUsed() const { return this->Used; }
+bool Figur::GetUsed() const { return this->Used; };
 
 /*
 	Setze, ob die Figur benutzt wird.
 
 	bool used: Ob benutzt (true) oder nicht (false).
 */
-void Figur::SetUsed(bool used) { this->Used = used; }
+void Figur::SetUsed(bool used) { this->Used = used; };
 
 
 /*
 	Wiedergebe ob diese Figur bereits am Ziel ist.
 */
-bool Figur::GetDone() const { return this->Done; }
+bool Figur::GetDone() const { return this->Done; };
 
 /*
 	Setze, ob die Figur bereits am Ziel ist.
 
 	bool isDone: Ob am Ziel (true) oder nicht (false).
 */
-void Figur::SetDone(bool isDone) { this->Done = isDone; }
+void Figur::SetDone(bool isDone) { this->Done = isDone; };

@@ -37,7 +37,7 @@ inline std::mt19937 randomGenerator; // Zufalls-Generator für den Würfel.
 
 namespace CoreHelper {
 	void GenerateSeed();
-	uint8_t Würfeln();
+	uint8_t RollDice();
 };
 
 #endif

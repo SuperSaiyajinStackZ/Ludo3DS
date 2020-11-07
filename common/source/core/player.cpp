@@ -32,17 +32,17 @@
 	uint8_t figurAmount: Die Anzahl der Figuren.
 */
 Player::Player(uint8_t figurAmount) {
-	uint8_t am = 0;
+	uint8_t amount = 0;
 
 	/* Wir setzen die Anzahl der Figuren auf benutzt. */
 	for (uint8_t i = 0; i < figurAmount; i++) {
 		this->Figuren[i] = std::make_unique<Figur>(true);
-		am++;
+		amount++;
 	}
 
 	/* Falls die Anzahl kleiner als 4 ist.. setzen wir die restlichen Figuren auf nicht benutzt. */
-	if (am < 4) {
-		for (uint8_t i = am; i < 4; i++) {
+	if (amount < 4) {
+		for (uint8_t i = amount; i < 4; i++) {
 			this->Figuren[i] = std::make_unique<Figur>(false);
 		}
 	}

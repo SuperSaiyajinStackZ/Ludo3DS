@@ -35,8 +35,7 @@ protected:
 	bool Used; // Falls Benutzt.
 	bool Done; // Ob schon am Ziel.
 public:
-	Figur(bool isUsed) :
-		Position(0), Used(isUsed), Done(false) { }
+	Figur(bool isUsed) : Position(0), Used(isUsed), Done(false) { }
 
 	uint8_t GetPosition() const;
 	void SetPosition(uint8_t pos);

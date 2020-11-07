@@ -42,7 +42,7 @@ void CoreHelper::GenerateSeed() {
 /*
     Lasse den Würfel rollen und wiedergebe das Ergebnis.
 */
-uint8_t CoreHelper::Würfeln() {
+uint8_t CoreHelper::RollDice() {
 	if (!hasSeeded) return 0; // Da wir noch nicht geseeded haben, wiedergebe 0.
 
 	return randomGenerator() % 6 + 1;
