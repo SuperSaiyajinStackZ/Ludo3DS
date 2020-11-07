@@ -241,7 +241,7 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 				this->RoundLogic(hDown, hHeld);
 
 			} else {
-				this->FigureSelection(hDown, hHeld);
+				this->FigureSelection(hDown, hHeld, touch);
 			}
 		}
 	}
@@ -529,9 +529,33 @@ void GameScreen::GetFirstAvlFigur() {
 }
 
 /*
+	Touch Handling für die Figuren.
+*/
+Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur) const {
+	const uint8_t position = this->currentGame->GetPosition(player, figur);
+
+	/* 0 und 41+ haben eine spezielle handlung für die Touch Position. */
+	if (position == 0) {
+		return this->PlayerField[(player * 4) + figur];
+	}
+
+	/* Feld Handling. */
+	if (position > 0 && position < 41) {
+		return this->MainField[GameHelper::PositionConvert(player, position) - 1];
+	}
+
+	if (position > 40) {
+		return this->EingangField[(player * 4) + (position - 41)];
+	}
+
+	return { 0,  0,  0,  0 };
+}
+
+
+/*
 	Der Selektion Teil für die Figur.
 */
-void GameScreen::FigureSelection(u32 hDown, u32 hHeld) {
+void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (hHeld & KEY_SELECT) {
 		Msg::HelperBox(Lang::get("GAME_INSTR_2"));
 	}
@@ -542,6 +566,35 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld) {
 
 	if ((hDown & KEY_LEFT) || (hDown & KEY_L)) {
 		this->PreviousFigur();
+	}
+
+	if (hDown & KEY_TOUCH) {
+		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
+			if (touching(touch, this->GetFigurTouchIndex(this->currentGame->GetCurrentPlayer(), i))) {
+				this->figurSelection = i;
+
+				const bool canCont = this->Play();
+				if (canCont) this->awaitFigurSelect = false; // Weil wir spielen konnten, erwarten wir keine Figur Selektion.
+
+				if (canCont) {
+					/* Führe die Kick Aktion aus. */
+					GameHelper::KickAction(this->currentGame,
+						this->currentGame->GetCurrentPlayer(), this->figurSelection);
+				}
+
+				if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
+					char msg[100];
+					snprintf(msg, sizeof(msg), Lang::get("PLAYER_WON").c_str(), this->currentGame->GetCurrentPlayer() + 1);
+					Msg::DisplayWaitMsg(msg);
+
+					this->gameOver = true;
+					return;
+				}
+
+				if (!this->awaitFigurSelect) this->NextPHandle();
+				return;
+			}
+		}
 	}
 
 	if (hDown & KEY_A) {

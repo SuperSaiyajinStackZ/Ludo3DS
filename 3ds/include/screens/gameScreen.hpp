@@ -48,7 +48,7 @@ private:
 
 	/* Haupt Logiken. */
 	void RoundLogic(u32 hDown, u32 hHeld);
-	void FigureSelection(u32 hDown, u32 hHeld);
+	void FigureSelection(u32 hDown, u32 hHeld, touchPosition touch);
 	void SubLogic(u32 hDown, u32 hHeld, touchPosition touch);
 
 	/* Ein paar Utilities. */
@@ -58,6 +58,7 @@ private:
 	void PreviousFigur();
 	void GetFirstAvlFigur();
 	void AIHandle();
+	Structs::ButtonPos GetFigurTouchIndex(uint8_t player, uint8_t figur) const;
 
 	/* Variablen und so. */
 	std::unique_ptr<Game> currentGame = nullptr; // Der Spiel-Zeiger.
