@@ -206,7 +206,7 @@ void Game::SaveConversion() {
 }
 
 /*
-	Schreibe die Daten zu einer datei.
+	Schreibe die Daten zu einer Datei.
 */
 void Game::SaveToFile(bool update) {
 	if (update) this->SaveConversion(); // Konvertiere, falls update ist gewollt (true).

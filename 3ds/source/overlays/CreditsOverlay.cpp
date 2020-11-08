@@ -44,20 +44,20 @@ static void Draw() {
 	GFX::DrawSprite(sprites_stackZ_idx, 2, 75);
 	Gui::DrawSprite(sprites, sprites_Ludo3DS_idx, 165, 55, 0.9, 0.9);
 
-	Gui::DrawStringCentered(0, 1, 0.6f, TEXT_COLOR, Lang::get("CREDITS"));
+	Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("CREDITS"));
 	Gui::DrawStringCentered(0, 30, 0.6f, TEXT_COLOR, Lang::get("DEV_BY"), 390);
-	Gui::DrawStringCentered(0, 217, 0.6f, TEXT_COLOR, Lang::get("CURRENT_VERSION") + std::string(V_STRING), 390);
+	Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("CURRENT_VERSION") + std::string(V_STRING), 390);
 
 	GFX::DrawBaseBottom();
 	Gui::Draw_Rect(0, 0, 320, 25, BAR_COLOR);
 	Gui::Draw_Rect(0, 215, 320, 25, BAR_COLOR);
 
-	Gui::DrawStringCentered(0, 28, 0.7f, TEXT_COLOR, "devkitPro", 310, 0);
-	Gui::DrawStringCentered(0, 48, 0.6f, TEXT_COLOR, Lang::get("DEVKITPRO"), 310, 0);
-	Gui::DrawStringCentered(0, 78, 0.7f, TEXT_COLOR, "SuperSaiyajinStackZ", 310, 0);
-	Gui::DrawStringCentered(0, 98, 0.6f, TEXT_COLOR, Lang::get("DEVELOPING_APP"), 310, 0);
-	Gui::DrawStringCentered(0, 128, 0.7f, TEXT_COLOR, "Universal-Team", 310, 0);
-	Gui::DrawStringCentered(0, 148, 0.6f, TEXT_COLOR, Lang::get("UNIVERSAL_CORE"), 310, 0);
+	Gui::DrawStringCentered(0, 28, 0.6f, TEXT_COLOR, "devkitPro", 310, 0);
+	Gui::DrawStringCentered(0, 48, 0.5f, TEXT_COLOR, Lang::get("DEVKITPRO"), 310, 0);
+	Gui::DrawStringCentered(0, 78, 0.6f, TEXT_COLOR, "SuperSaiyajinStackZ", 310, 0);
+	Gui::DrawStringCentered(0, 98, 0.5f, TEXT_COLOR, Lang::get("DEVELOPING_APP"), 310, 0);
+	Gui::DrawStringCentered(0, 128, 0.6f, TEXT_COLOR, "Universal-Team", 310, 0);
+	Gui::DrawStringCentered(0, 148, 0.5f, TEXT_COLOR, Lang::get("UNIVERSAL_CORE"), 310, 0);
 	C3D_FrameEnd(0);
 }
 

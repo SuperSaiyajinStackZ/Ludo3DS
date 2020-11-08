@@ -86,10 +86,12 @@ int main() {
 		C2D_TargetClear(Bottom, NO_COLOR);
 
 		Gui::DrawScreen(true);
-		if (!exiting) Gui::ScreenLogic(hDown, hHeld, touch, true, true);
+		if (!exiting) Gui::ScreenLogic(hDown, hHeld, touch, false, true);
 		C3D_FrameEnd(0);
 
 		if (exiting) {
+			if (hDown & KEY_START) fullExit = true;
+
 			if (fadeAlpha < 255) {
 				fadeAlpha += 2;
 				if (fadeAlpha >= 255) {

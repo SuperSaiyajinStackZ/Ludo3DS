@@ -68,7 +68,7 @@
 class Game {
 public:
 	Game(uint8_t playerAmount = 2, uint8_t figurAmount = 2);
-	~Game() { }
+	~Game() { };
 
 	/* Spiel-Utilities. */
 	void InitNewGame(uint8_t playerAmount = 2, uint8_t figurAmount = 2);

@@ -33,7 +33,7 @@
 #include <citro2d.h>
 
 /* Definiere die Farben hier. */
-#define TEXT_COLOR C2D_Color32(255, 255, 255, 255) // Text Farbe.
+#define TEXT_COLOR C2D_Color32(190, 190, 190, 255) // Text Farbe.
 #define BAR_COLOR C2D_Color32(140, 80, 30, 255) // Balken Farbe.
 #define BG_COLOR C2D_Color32(118, 62, 9, 255) // Hintergrund Farbe.
 #define BOX_COLOR C2D_Color32(130, 70, 20, 255) // TextBox Farbe.
