@@ -30,7 +30,7 @@
 #include <dirent.h>
 
 bool exiting = false;
-C2D_SpriteSheet sprites;
+C2D_SpriteSheet sets, sprites;
 touchPosition touch;
 std::unique_ptr<Settings> konfiguration = nullptr;
 int fadeAlpha = 0;
@@ -54,6 +54,7 @@ static void init() {
 	gfxInitDefault();
 	Gui::init();
 	Gui::loadSheet("romfs:/gfx/sprites.t3x", sprites);
+	Gui::loadSheet("romfs:/gfx/set.t3x", sets);
 
 	mkdir("sdmc:/3ds", 0x777);
 	mkdir("sdmc:/3ds/Ludo3DS", 0x777);
@@ -104,6 +105,7 @@ int main() {
 	Gui::exit();
 	konfiguration->Save();
 	Gui::unloadSheet(sprites);
+	Gui::unloadSheet(sets);
 	romfsExit();
 	gfxExit();
 

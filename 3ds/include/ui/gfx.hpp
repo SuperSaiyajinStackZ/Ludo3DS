@@ -29,17 +29,18 @@
 
 #include "common.hpp"
 #include "coreHelper.hpp"
+#include "set.h"
 #include "sprites.h"
 #include <citro2d.h>
 
 /* Definiere die Farben hier. */
 #define TEXT_COLOR C2D_Color32(190, 190, 190, 255) // Text Farbe.
-#define BAR_COLOR C2D_Color32(140, 80, 30, 255) // Balken Farbe.
-#define BG_COLOR C2D_Color32(118, 62, 9, 255) // Hintergrund Farbe.
-#define BOX_COLOR C2D_Color32(130, 70, 20, 255) // TextBox Farbe.
+#define BAR_COLOR C2D_Color32(132, 60, 0, 255) // Balken Farbe.
+#define BG_COLOR C2D_Color32(98, 46, 3, 255) // Hintergrund Farbe.
+#define BOX_COLOR C2D_Color32(81, 39, 4, 255) // TextBox Farbe.
 
-#define BUTTON_SELECTED C2D_Color32(160, 100, 50, 255) // Ausgewählte Schaltflächen Farbe.
-#define BUTTON_UNSELECTED C2D_Color32(160, 100, 50, 255) // Nicht Ausgewählte Schaltflächen Farbe.
+#define BUTTON_SELECTED C2D_Color32(245, 161, 92, 255) // Ausgewählte Schaltflächen Farbe.
+#define BUTTON_UNSELECTED C2D_Color32(159, 72, 0, 255) // Nicht Ausgewählte Schaltflächen Farbe.
 
 #define DIM_COLOR C2D_Color32(0, 0, 0, 170) // Gedunkelter Bildschirm Farbe.
 #define NO_COLOR C2D_Color32(0, 0, 0, 0) // Transparente Farbe.
@@ -56,11 +57,14 @@ namespace GFX {
 
 	/* Spritezeug. */
 	void DrawSprite(int index, int x, int y, float ScaleX = 1, float ScaleY = 1);
+	void DrawSet(int index, int x, int y, float ScaleX = 1, float ScaleY = 1);
 
 	void DrawFigure(uint8_t player, int x, int y);
 	void DrawPlayerSelector(uint8_t player, int x, int y);
 
 	void Dice(uint8_t ergebnis, int x, int y);
+
+	void DrawField(int xOffs = 55, int yOffs = 15);
 };
 
 #endif

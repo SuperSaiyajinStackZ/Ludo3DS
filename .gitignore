@@ -11,3 +11,4 @@
 *.o
 3ds/build/sprites.h
 *.t3x
+3ds/build/set.h

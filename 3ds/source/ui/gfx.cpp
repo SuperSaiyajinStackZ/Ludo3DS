@@ -26,7 +26,7 @@
 
 #include "gfx.hpp"
 
-extern C2D_SpriteSheet sprites;
+extern C2D_SpriteSheet sets, sprites;
 
 /*
 	Zeichne eine basis für den Top Screen.
@@ -58,6 +58,19 @@ void GFX::DrawSprite(int index, int x, int y, float ScaleX, float ScaleY) {
 }
 
 /*
+	Zeichne einen Sprite von dem sets spritesheet.
+
+	int index: Der index des Sprites.
+	int x: Die X Position des Sprites.
+	int y: Die Y Position des Sprites.
+	float ScaleX: Breiten-Skalierung.
+	float ScaleY: Höhen-Skalierung.
+*/
+void GFX::DrawSet(int index, int x, int y, float ScaleX, float ScaleY) {
+	Gui::DrawSprite(sets, index, x, y, ScaleX, ScaleY);
+}
+
+/*
 	Zeichne einem Spieler seine Figur.
 
 	uint8_t player: Der Spieler-Index.
@@ -67,19 +80,19 @@ void GFX::DrawSprite(int index, int x, int y, float ScaleX, float ScaleY) {
 void GFX::DrawFigure(uint8_t player, int x, int y) {
 	switch(player) {
 		case 0:
-			GFX::DrawSprite(sprites_chip_p1_idx, x, y);
+			GFX::DrawSet(set_chip_1_idx, x, y);
 			break;
 
 		case 1:
-			GFX::DrawSprite(sprites_chip_p2_idx, x, y);
+			GFX::DrawSet(set_chip_2_idx, x, y);
 			break;
 
 		case 2:
-			GFX::DrawSprite(sprites_chip_p3_idx, x, y);
+			GFX::DrawSet(set_chip_3_idx, x, y);
 			break;
 
 		case 3:
-			GFX::DrawSprite(sprites_chip_p4_idx, x, y);
+			GFX::DrawSet(set_chip_4_idx, x, y);
 			break;
 	}
 }
@@ -128,7 +141,7 @@ void GFX::DrawPlayerSelector(uint8_t player, int x, int y) {
 	C2D_SetImageTint(&tint, C2D_BotLeft, color, 1);
 	C2D_SetImageTint(&tint, C2D_BotRight, color, 1);
 
-	C2D_DrawImageAt(C2D_SpriteSheetGetImage(sprites, sprites_chip_selector_idx), x, y, 0.5f, &tint, 1, 1);
+	C2D_DrawImageAt(C2D_SpriteSheetGetImage(sets, set_chip_selector_idx), x, y, 0.5f, &tint, 1, 1);
 	timer += .030;
 }
 
@@ -142,27 +155,49 @@ void GFX::DrawPlayerSelector(uint8_t player, int x, int y) {
 void GFX::Dice(uint8_t ergebnis, int x, int y) {
 	switch(ergebnis) {
 		case 1:
-			GFX::DrawSprite(sprites_dice_1_idx, x, y);
+			GFX::DrawSet(set_dice_1_idx, x, y);
 			break;
 
 		case 2:
-			GFX::DrawSprite(sprites_dice_2_idx, x, y);
+			GFX::DrawSet(set_dice_2_idx, x, y);
 			break;
 
 		case 3:
-			GFX::DrawSprite(sprites_dice_3_idx, x, y);
+			GFX::DrawSet(set_dice_3_idx, x, y);
 			break;
 
 		case 4:
-			GFX::DrawSprite(sprites_dice_4_idx, x, y);
+			GFX::DrawSet(set_dice_4_idx, x, y);
 			break;
 
 		case 5:
-			GFX::DrawSprite(sprites_dice_5_idx, x, y);
+			GFX::DrawSet(set_dice_5_idx, x, y);
 			break;
 
 		case 6:
-			GFX::DrawSprite(sprites_dice_6_idx, x, y);
+			GFX::DrawSet(set_dice_6_idx, x, y);
 			break;
 	}
+}
+
+/*
+	Zeichnet das SpielFeld.
+
+	int xOffs: Der X-Offset.
+	int yOffs: Der Y-Offset.
+*/
+void GFX::DrawField(int xOffs, int yOffs) {
+	GFX::DrawSet(set_main_field_idx, xOffs, yOffs); // Haupt-Feld.
+
+	/* Häuser. */
+	GFX::DrawSet(set_home_1_idx, xOffs, 134 + yOffs);
+	GFX::DrawSet(set_home_2_idx, xOffs, yOffs);
+	GFX::DrawSet(set_home_3_idx, 134 + xOffs, yOffs);
+	GFX::DrawSet(set_home_4_idx, 134 + xOffs, 134 + yOffs);
+
+	/* Felder. */
+	GFX::DrawSet(set_fields_1_idx, 77 + xOffs, 115 + yOffs);
+	GFX::DrawSet(set_fields_2_idx, 1 + xOffs, 77 + yOffs);
+	GFX::DrawSet(set_fields_3_idx, 96 + xOffs, 1 + yOffs);
+	GFX::DrawSet(set_fields_4_idx, 115 + xOffs, 96 + yOffs);
 }

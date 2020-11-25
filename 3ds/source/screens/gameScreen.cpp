@@ -139,7 +139,7 @@ void GameScreen::DisplayGame(void) const {
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 	GFX::DrawBaseBottom();
 
-	GFX::DrawSprite(sprites_field_black_idx, 55, 15);
+	GFX::DrawField();
 
 	this->DrawPlayers();
 

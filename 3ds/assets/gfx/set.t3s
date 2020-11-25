@@ -1,0 +1,25 @@
+--atlas -f rgba8888 -z auto
+
+set/chip_1.png
+set/chip_2.png
+set/chip_3.png
+set/chip_4.png
+set/chip_selector.png
+
+set/dice_1.png
+set/dice_2.png
+set/dice_3.png
+set/dice_4.png
+set/dice_5.png
+set/dice_6.png
+
+set/fields_1.png
+set/fields_2.png
+set/fields_3.png
+set/fields_4.png
+set/main_field.png
+
+set/home_1.png
+set/home_2.png
+set/home_3.png
+set/home_4.png

@@ -43,6 +43,7 @@ extern bool touching(touchPosition touch, Structs::ButtonPos button);
 */
 bool Msg::promptMsg(std::string msg) {
 	s32 selection = 0;
+
 	while(1) {
 		Gui::clearTextBufs();
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
@@ -68,30 +69,18 @@ bool Msg::promptMsg(std::string msg) {
 		hidScanInput();
 		hidTouchRead(&touch);
 
-		if (hidKeysDown() & KEY_LEFT) {
-			selection = 0;
-		}
+		if (hidKeysDown() & KEY_LEFT) selection = 0;
 
-		if (hidKeysDown() & KEY_RIGHT) {
-			selection = 1;
-		}
+		if (hidKeysDown() & KEY_RIGHT) selection = 1;
 
 		if (hidKeysDown() & KEY_A) {
-			if (selection == 0) {
-				return true;
+			if (selection == 0) return true;
 
-			} else {
-				return false;
-			}
+			else return false;
 		}
 
-		if (hidKeysDown() & KEY_TOUCH && touching(touch, promptBtn[0])) {
-			return true;
-		}
-
-		if (hidKeysDown() & KEY_TOUCH && touching(touch, promptBtn[1])) {
-			return false;
-		}
+		if (hidKeysDown() & KEY_TOUCH && touching(touch, promptBtn[0])) return true;
+		if (hidKeysDown() & KEY_TOUCH && touching(touch, promptBtn[1])) return false;
 	}
 }
 
