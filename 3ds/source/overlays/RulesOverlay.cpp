@@ -46,6 +46,7 @@ static void Draw() {
 	GFX::DrawBaseBottom();
 	Gui::Draw_Rect(0, 0, 320, 25, BAR_COLOR);
 	Gui::Draw_Rect(0, 215, 320, 25, BAR_COLOR);
+	Gui::DrawStringCentered(0, 2, 0.6f, TEXT_COLOR, Lang::get("X_DONT_SHOW_AGAIN"), 310);
 	C3D_FrameEnd(0);
 }
 
@@ -59,6 +60,8 @@ void Overlays::RulesOverlay() {
 		Draw();
 
 		hidScanInput();
+
+		if (hidKeysDown() & KEY_X) konfiguration->Rules(0);
 
 		if (hidKeysDown()) doOut = true;
 	}

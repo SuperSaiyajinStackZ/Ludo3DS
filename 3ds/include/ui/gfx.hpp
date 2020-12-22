@@ -39,16 +39,8 @@
 #define BG_COLOR C2D_Color32(98, 46, 3, 255) // Hintergrund Farbe.
 #define BOX_COLOR C2D_Color32(81, 39, 4, 255) // TextBox Farbe.
 
-#define BUTTON_SELECTED C2D_Color32(245, 161, 92, 255) // Ausgewählte Schaltflächen Farbe.
-#define BUTTON_UNSELECTED C2D_Color32(159, 72, 0, 255) // Nicht Ausgewählte Schaltflächen Farbe.
-
 #define DIM_COLOR C2D_Color32(0, 0, 0, 170) // Gedunkelter Bildschirm Farbe.
 #define NO_COLOR C2D_Color32(0, 0, 0, 0) // Transparente Farbe.
-
-#define SELECTOR_P1 C2D_Color32(255, 0, 0, 255) // Spieler 1 Selektor Farbe.
-#define SELECTOR_P2 C2D_Color32(0, 132, 255, 255) // Spieler 2 Selektor Farbe.
-#define SELECTOR_P3 C2D_Color32(255, 211, 0, 255) // Spieler 3 Selektor Farbe.
-#define SELECTOR_P4 C2D_Color32(0, 255, 138, 255) // Spieler 4 Selektor Farbe.
 
 namespace GFX {
 	/* Basiszeug. */
@@ -64,7 +56,7 @@ namespace GFX {
 
 	void Dice(uint8_t ergebnis, int x, int y);
 
-	void DrawField(int xOffs = 55, int yOffs = 15);
+	void DrawField(int xOffs = 15, int yOffs = 15);
 };
 
 #endif

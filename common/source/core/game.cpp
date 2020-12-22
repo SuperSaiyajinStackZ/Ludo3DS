@@ -33,7 +33,7 @@
 	uint8_t playerAmount: Die Spieler-Anzahl.
 	uint8_t figurAmount: Die Figuren-Anzahl.
 */
-Game::Game(uint8_t playerAmount, uint8_t figurAmount) { this->InitNewGame(playerAmount, figurAmount); }
+Game::Game(uint8_t playerAmount, uint8_t figurAmount) { this->InitNewGame(playerAmount, figurAmount); };
 
 /*
 	Initialisiere ein neues Spiel.
@@ -47,8 +47,8 @@ void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount) {
 		this->Players[i] = nullptr;
 	}
 
-	if ((playerAmount > MAX_FIGURES) || (playerAmount <= 0)) playerAmount = 2; // 0 und 5+ sind zu viel und werden als 2 gesetzt.
-	if ((figurAmount > MAX_FIGURES) || (figurAmount <= 0)) figurAmount = 1; // 0 und 5+ sind zu viel und werden als 1 gesetzt.
+	if ((playerAmount > MAX_FIGURES) || (playerAmount <= 1)) playerAmount = 2; // 0, 1 und 5+ sind zu wenig / viel und werden als 2 gesetzt.
+	if ((figurAmount > MAX_FIGURES) || (figurAmount <= 0)) figurAmount = 1; // 0 und 5+ sind zu wenig/ viel und werden als 1 gesetzt.
 
 	this->CurrentPlayer = 0;
 	this->PlayerAmount = playerAmount;
@@ -58,7 +58,7 @@ void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount) {
 		this->Players[i] = std::make_unique<Player>(figurAmount);
 	}
 
-	this->GameData = std::unique_ptr<uint8_t[]>(new uint8_t[_GAME_SIZE]);
+	this->GameData = std::make_unique<uint8_t[]>(_GAME_SIZE);
 	this->SaveConversion();
 }
 
@@ -69,21 +69,21 @@ void Game::LoadGameFromFile() {
 	this->ValidGame = false; // Setze das immer zu falsch, wenn die Funktion startet.
 	if (access(_GAME_DATA_FILE, F_OK) != 0) return; // Datei existiert nicht.
 
-	FILE *file = fopen(_GAME_DATA_FILE, "r");
+	FILE *in = fopen(_GAME_DATA_FILE, "r");
 
-	if (file) {
-		fseek(file, 0, SEEK_END);
-		uint32_t size = ftell(file); // Teile uns die größe der Datei mit.
-		fseek(file, 0, SEEK_SET);
+	if (in) {
+		fseek(in, 0, SEEK_END);
+		uint32_t size = ftell(in); // Teile uns die größe der Datei mit.
+		fseek(in, 0, SEEK_SET);
 
 		if (size == _GAME_SIZE) {
 			this->GameData = nullptr;
-			this->GameData = std::unique_ptr<uint8_t[]>(new uint8_t[_GAME_SIZE]);
-			fread(this->GameData.get(), 1, _GAME_SIZE, file);
+			this->GameData = std::make_unique<uint8_t[]>(_GAME_SIZE);
+			fread(this->GameData.get(), 1, _GAME_SIZE, in);
 			this->ValidGame = true;
 		}
 
-		fclose(file);
+		fclose(in);
 	}
 }
 
@@ -101,8 +101,8 @@ void Game::convertDataToGame() {
 		this->CurrentPlayer = this->GameData.get()[_GAME_CURRENT_PLAYER]; // Der Aktuelle Spieler.
 
 		/* Die Spieler-Anzahl. */
-		if ((this->GameData.get()[_GAME_PLAYER_AMOUNT] > MAX_FIGURES) || (this->GameData.get()[_GAME_PLAYER_AMOUNT] <= 0)) {
-			this->PlayerAmount = MAX_FIGURES; // Setze zu 4, weil 0 / 5+ ist verboten.
+		if ((this->GameData.get()[_GAME_PLAYER_AMOUNT] > MAX_FIGURES) || (this->GameData.get()[_GAME_PLAYER_AMOUNT] <= 1)) {
+			this->PlayerAmount = MAX_FIGURES; // Setze zu 4, weil 1- / 5+ verboten ist.
 
 		} else {
 			this->PlayerAmount = this->GameData.get()[_GAME_PLAYER_AMOUNT];
@@ -110,7 +110,7 @@ void Game::convertDataToGame() {
 
 		/* Die Figuren-Anzahl. */
 		if ((this->GameData.get()[_GAME_FIGUR_AMOUNT] > MAX_FIGURES) || (this->GameData.get()[_GAME_FIGUR_AMOUNT] <= 0)) {
-			this->FigurAmount = MAX_FIGURES; // Setze zu 4, weil 5+ ist verboten.
+			this->FigurAmount = MAX_FIGURES; // Setze zu 4, weil 0 / 5+ verboten ist.
 
 		} else {
 			this->FigurAmount = this->GameData.get()[_GAME_FIGUR_AMOUNT];
@@ -129,12 +129,8 @@ void Game::convertDataToGame() {
 				this->Players[player]->SetPosition(figur, this->GameData[_GAME_PLAYER_1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)]);
 
-				/* Benutzt. */
-				this->Players[player]->SetUsed(figur, this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
-						(player * _GAME_PLAYER_SIZE)]);
-
 				/* Ziel. */
-				this->Players[player]->SetDone(figur, this->GameData[_GAME_PLAYER_1 + 2 + (figur * _GAME_FIGUR_SIZE) +
+				this->Players[player]->SetDone(figur, this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)]);
 
 			}
@@ -159,17 +155,12 @@ void Game::SaveConversion() {
 
 			for (uint8_t figur = 0; figur < MAX_FIGURES; figur++) {
 				if (figur < this->FigurAmount) {
-
 					/* Position. */
 					this->GameData[_GAME_PLAYER_1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)] = this->Players[player]->GetPosition(figur);
 
-					/* Benutzt. */
-					this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
-						(player * _GAME_PLAYER_SIZE)] = this->Players[player]->GetUsed(figur);
-
 					/* Ziel. */
-					this->GameData[_GAME_PLAYER_1 + 2 + (figur * _GAME_FIGUR_SIZE) +
+					this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)] = this->Players[player]->GetDone(figur);
 
 				} else {
@@ -177,12 +168,8 @@ void Game::SaveConversion() {
 					this->GameData[_GAME_PLAYER_1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)] = 0;
 
-					/* Benutzt. */
-					this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
-						(player * _GAME_PLAYER_SIZE)] = 0;
-
 					/* Ziel. */
-					this->GameData[_GAME_PLAYER_1 + 2 + (figur * _GAME_FIGUR_SIZE) +
+					this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)] = 0;
 				}
 			}
@@ -193,12 +180,8 @@ void Game::SaveConversion() {
 				this->GameData[_GAME_PLAYER_1 + (figur * _GAME_FIGUR_SIZE) +
 					(player * _GAME_PLAYER_SIZE)] = 0;
 
-				/* Benutzt. */
-				this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
-					(player * _GAME_PLAYER_SIZE)] = 0;
-
 				/* Ziel. */
-				this->GameData[_GAME_PLAYER_1 + 2 + (figur * _GAME_FIGUR_SIZE) +
+				this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
 					(player * _GAME_PLAYER_SIZE)] = 0;
 			}
 		}
@@ -239,32 +222,6 @@ void Game::SetPosition(uint8_t player, uint8_t figur, uint8_t position) {
 	if (player > this->PlayerAmount) return;
 
 	this->Players[player]->SetPosition(figur, position);
-}
-
-
-/*
-	Wiedergebe ob eine figur eines Spielers benutzt wird.
-
-	uint8_t player: Der Spieler-Index.
-	uint8_t figur: Der Figuren-Index.
-*/
-bool Game::GetUsed(uint8_t player, uint8_t figur) const {
-	if (player > this->PlayerAmount) return false;
-
-	return this->Players[player]->GetUsed(figur);
-}
-
-/*
-	Setze ob eine figur eines Spielers benutzt wird.
-
-	uint8_t player: Der Spieler-Index.
-	uint8_t figur: Der Figuren-Index.
-	bool used: Ob benutzt (true) oder nicht (false).
-*/
-void Game::SetUsed(uint8_t player, uint8_t figur, bool used) {
-	if (player > this->PlayerAmount) return;
-
-	this->Players[player]->SetUsed(figur, used);
 }
 
 

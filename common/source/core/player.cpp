@@ -32,19 +32,8 @@
 	uint8_t figurAmount: Die Anzahl der Figuren.
 */
 Player::Player(uint8_t figurAmount) {
-	uint8_t amount = 0;
-
-	/* Wir setzen die Anzahl der Figuren auf benutzt. */
 	for (uint8_t i = 0; i < figurAmount; i++) {
-		this->Figuren[i] = std::make_unique<Figur>(true);
-		amount++;
-	}
-
-	/* Falls die Anzahl kleiner als 4 ist.. setzen wir die restlichen Figuren auf nicht benutzt. */
-	if (amount < 4) {
-		for (uint8_t i = amount; i < 4; i++) {
-			this->Figuren[i] = std::make_unique<Figur>(false);
-		}
+		this->Figuren[i] = std::make_unique<Figur>();
 	}
 }
 
@@ -70,30 +59,6 @@ void Player::SetPosition(uint8_t figur, uint8_t position) {
 	if (figur > MAX_FIGURES - 1) return; // 0 - 3 sind erlaubt.
 
 	this->Figuren[figur]->SetPosition(position);
-}
-
-
-/*
-	Wiedergebe, ob eine Figur benutzt wird.
-
-	uint8_t figur: Der Figuren-Index.
-*/
-bool Player::GetUsed(uint8_t figur) const {
-	if (figur > MAX_FIGURES - 1) return false; // 0 - 3 sind erlaubt.
-
-	return this->Figuren[figur]->GetUsed();
-}
-
-/*
-	Setze, ob eine Figur benutzt wird.
-
-	uint8_t figur: Der Figuren-Index.
-	bool used: Ob benutzt (true) oder nicht (false).
-*/
-void Player::SetUsed(uint8_t figur, bool used) {
-	if (figur > MAX_FIGURES - 1) return; // 0 - 3 sind erlaubt.
-
-	this->Figuren[figur]->SetUsed(used);
 }
 
 

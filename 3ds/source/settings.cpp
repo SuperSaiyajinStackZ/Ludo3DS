@@ -35,6 +35,7 @@
 void Settings::Initialize() {
 	FILE *file = fopen(CONF_PATH, "w");
 	this->SetInt("Language", 1);
+	this->SetInt("ShowRules", 1);
 
 	const std::string dump = this->config.dump(1, '\t');
 	fwrite(dump.c_str(), 1, this->config.dump(1, '\t').size(), file);
@@ -47,16 +48,17 @@ void Settings::Initialize() {
 Settings::Settings() {
 	if (access(CONF_PATH, F_OK) != 0) this->Initialize();
 
-	FILE* file = fopen(CONF_PATH, "r");
+	FILE *file = fopen(CONF_PATH, "r");
 	this->config = nlohmann::json::parse(file, nullptr, false);
 	fclose(file);
 
-	if (!this->config.contains("Language")) {
-		this->Language(1); // 1 ist Englisch, was die Standard Sprache ist.
+	/* Sprache. */
+	if (!this->config.contains("Language")) this->Language(1); // 1 ist Englisch, was die Standard Sprache ist.
+	else this->Language(this->GetInt("Language"));
 
-	} else {
-		this->Language(this->GetInt("Language"));
-	}
+	/* Regeln anschauen. */
+	if (!this->config.contains("ShowRules")) this->Rules(1); // 1 ist ja, also zeige Regeln an.
+	else this->Rules(this->GetInt("ShowRules"));
 
 	this->changesMade = false;
 }
@@ -68,6 +70,7 @@ void Settings::Save() {
 	if (this->changesMade) {
 		FILE *file = fopen(CONF_PATH, "w");
 		this->SetInt("Language", this->Language());
+		this->SetInt("ShowRules", this->Rules());
 
 		/* Scrhreibe Änderungen in die Konfigurations-Datei. */
 		const std::string dump = this->config.dump(1, '\t');
@@ -84,7 +87,7 @@ void Settings::Save() {
 int Settings::GetInt(const std::string &key) const {
 	if (!this->config.contains(key)) return 0;
 
-	return this->config.at(key).get_ref<const int64_t&>();
+	return this->config[key].get_ref<const int64_t &>();
 }
 
 /*
@@ -93,4 +96,4 @@ int Settings::GetInt(const std::string &key) const {
 	const std::string &key: Wohin dies gesetzt werden soll.
 	int v: Der Wert.
 */
-void Settings::SetInt(const std::string &key, int v) { this->config[key] = v; }
+void Settings::SetInt(const std::string &key, int v) { this->config[key] = v; };

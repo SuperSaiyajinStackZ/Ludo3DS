@@ -44,19 +44,6 @@ void Figur::SetPosition(uint8_t pos) {
 
 
 /*
-	Wiedergebe ob diese Figur benutzt wird.
-*/
-bool Figur::GetUsed() const { return this->Used; };
-
-/*
-	Setze, ob die Figur benutzt wird.
-
-	bool used: Ob benutzt (true) oder nicht (false).
-*/
-void Figur::SetUsed(bool used) { this->Used = used; };
-
-
-/*
 	Wiedergebe ob diese Figur bereits am Ziel ist.
 */
 bool Figur::GetDone() const { return this->Done; };

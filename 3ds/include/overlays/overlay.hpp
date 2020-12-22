@@ -29,6 +29,9 @@
 
 #include "common.hpp"
 
+/*
+	Für die Spiel-Einstellungen.
+*/
 struct GameData {
 	int8_t pAmount;
 	int8_t fAmount;

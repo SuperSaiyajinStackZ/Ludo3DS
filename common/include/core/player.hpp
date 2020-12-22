@@ -36,9 +36,6 @@ public:
 	uint8_t GetPosition(uint8_t figur) const;
 	void SetPosition(uint8_t figur, uint8_t position);
 
-	bool GetUsed(uint8_t figur) const;
-	void SetUsed(uint8_t figur, bool used);
-
 	bool GetDone(uint8_t figur) const;
 	void SetDone(uint8_t figur, bool isDone);
 private:

@@ -34,15 +34,15 @@
 #define _GAME_PLAYER_AMOUNT		0x1
 #define _GAME_FIGUR_AMOUNT		0x2
 
-#define _GAME_FIGUR_SIZE		0x3 // 0x0 -> Position, 0x1 -> Ob Benutzt, 0x2 ob fertig. 0x3 pro Figur.
-#define _GAME_PLAYER_SIZE		_GAME_FIGUR_SIZE * 4 // Jeweils 4 Figuren, was 0xC entspricht.
+#define _GAME_FIGUR_SIZE		0x2 // 0x0 -> Position, 0x1 -> ob fertig. 0x2 pro Figur.
+#define _GAME_PLAYER_SIZE		_GAME_FIGUR_SIZE * 4 // Jeweils 4 Figuren, was 0x8 entspricht.
 
-#define _GAME_PLAYER_1			0x3 // 0x3 - 0xE.
-#define _GAME_PLAYER_2			0xF // 0xF - 0x1A.
-#define _GAME_PLAYER_3			0x1B // 0x1B - 0x26.
-#define _GAME_PLAYER_4			0x27 // 0x27 - 0x32.
+#define _GAME_PLAYER_1			0x3 // 0x3 - 0xA.
+#define _GAME_PLAYER_2			0xB // 0xB - 0x12.
+#define _GAME_PLAYER_3			0x13 // 0x13 - 0x1A.
+#define _GAME_PLAYER_4			0x1B // 0x1B - 0x22.
 
-#define _GAME_SIZE				0x33 // 0x33 --> 51 byte.
+#define _GAME_SIZE				0x23 // 0x23 --> 35 byte.
 
 #define _GAME_DATA_FILE "sdmc:/3ds/Ludo3DS/GameData.dat"
 
@@ -85,10 +85,6 @@ public:
 	uint8_t GetPosition(uint8_t player, uint8_t figur) const;
 	void SetPosition(uint8_t player, uint8_t figur, uint8_t position);
 
-	/* Wiedergebe und Setze, ob eine Figur benutzt wird. */
-	bool GetUsed(uint8_t player, uint8_t figur) const;
-	void SetUsed(uint8_t player, uint8_t figur, bool used);
-
 	/* Wiedergebe und Setze, ob eine Figur schon am Ziel ist. */
 	bool GetDone(uint8_t player, uint8_t figur) const;
 	void SetDone(uint8_t player, uint8_t figur, bool isDone);
@@ -103,14 +99,26 @@ public:
 	/* Computer part. */
 	bool GetAI() const { return this->UseAI; };
 	void SetAI(bool AI) { this->UseAI = AI; };
+
+	/* Ergebnis part. */
+	uint8_t GetErgebnis() const { return this->Ergebnis; };
+	void SetErgebnis(uint8_t v) { this->Ergebnis = v; };
+
+	/* Kann Fortfahren part. */
+	bool GetCanContinue() const { return this->CanContinue; };
+	void SetCanContinue(bool v) { this->CanContinue = v; };
+
+	/* Ausgewählte Figur part. */
+	uint8_t GetSelectedFigur() const { return this->SelectedFigur; };
+	void SetSelectedFigur(uint8_t v) { this->SelectedFigur = v; };
 private:
 	std::unique_ptr<Player> Players[4];
 
 	/*
 		Variablen für das Spiel.
 	*/
-	uint8_t CurrentPlayer = 0, FigurAmount = 1, PlayerAmount = 2;
-	bool ValidGame = false, UseAI = false;
+	uint8_t CurrentPlayer = 0, FigurAmount = 1, PlayerAmount = 2, Ergebnis = 0, SelectedFigur = 0;
+	bool ValidGame = false, UseAI = false, CanContinue = false;
 
 	std::unique_ptr<uint8_t[]> GameData = nullptr; // Spiel-Daten Buffer.
 };

@@ -98,29 +98,6 @@ void GFX::DrawFigure(uint8_t player, int x, int y) {
 }
 
 /*
-	Wiedergebe die Selektor Farbe eines Spielers für den Spieler-Selektor.
-
-	uint8_t player: Der Spieler.
-*/
-static uint32_t GetColor(uint8_t player) {
-	switch(player) {
-		case 0:
-			return SELECTOR_P1;
-
-		case 1:
-			return SELECTOR_P2;
-
-		case 2:
-			return SELECTOR_P3;
-
-		case 3:
-			return SELECTOR_P4;
-	}
-
-	return NO_COLOR;
-}
-
-/*
 	Zeichne den animierten Selektor für die Figur.
 
 	uint8_t player: Der Spieler-Index.
@@ -130,9 +107,9 @@ static uint32_t GetColor(uint8_t player) {
 void GFX::DrawPlayerSelector(uint8_t player, int x, int y) {
 	static float timer					= 0.0f;
 	const float highlight_multiplier	= fmax(0.0, fabs(fmod(timer, 1.0) - 0.5) / 0.5);
-	const u8 r							= GetColor(player) & 0xFF;
-	const u8 g							= (GetColor(player) >> 8) & 0xFF;
-	const u8 b							= (GetColor(player) >> 16) & 0xFF;
+	const u8 r							= 0 & 0xFF;
+	const u8 g							= (0 >> 8) & 0xFF;
+	const u8 b							= (0 >> 16) & 0xFF;
 	const u32 color = C2D_Color32(r + (255 - r) * highlight_multiplier, g + (255 - g) * highlight_multiplier, b + (255 - b) * highlight_multiplier, 255);
 
 	C2D_ImageTint tint;

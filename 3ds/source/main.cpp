@@ -63,7 +63,7 @@ static void init() {
 	Lang::load(konfiguration->Language()); // Lade die Übersetzungen.
 
 	Overlays::SplashOverlay();
-	Overlays::RulesOverlay();
+	if (konfiguration->Rules()) Overlays::RulesOverlay();
 	Gui::setScreen(std::make_unique<GameScreen>(), false, true);
 }
 
@@ -72,7 +72,6 @@ static void init() {
 */
 int main() {
 	bool fullExit = false;
-
 	init();
 
 	while(aptMainLoop() && !fullExit) {
@@ -95,9 +94,7 @@ int main() {
 
 			if (fadeAlpha < 255) {
 				fadeAlpha += 2;
-				if (fadeAlpha >= 255) {
-					fullExit = true;
-				}
+				if (fadeAlpha >= 255) fullExit = true;
 			}
 		}
 	}

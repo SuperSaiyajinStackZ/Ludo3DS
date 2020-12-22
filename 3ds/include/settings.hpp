@@ -40,6 +40,10 @@ public:
 	/* Wiedergebe und Setze die Sprache. */
 	uint8_t Language() const { return this->v_language; };
 	void Language(uint8_t v) { this->v_language = v; if (!this->changesMade) this->changesMade = true; };
+
+	/* Wiedergebe und Setze ob die Regeln angezeigt werden sollen. */
+	uint8_t Rules() const { return this->v_rules; };
+	void Rules(uint8_t v) { this->v_rules = v; if (!this->changesMade) this->changesMade = true; };
 private:
 	int GetInt(const std::string &key) const;
 	void SetInt(const std::string &key, int v);
@@ -48,7 +52,7 @@ private:
 	bool changesMade = false;
 
 	/* Variablen für die Konfiguration. */
-	uint8_t v_language;
+	uint8_t v_language, v_rules;
 };
 
 #endif

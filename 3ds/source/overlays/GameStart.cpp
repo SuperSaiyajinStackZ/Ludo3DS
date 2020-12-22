@@ -66,15 +66,15 @@ static void DrawGameStart(const uint8_t selectedPlayer, const uint8_t selectedFi
 	Gui::ScreenDraw(Bottom);
 	GFX::DrawSet(set_bottom_bg_idx, 0, 0);
 
-	Gui::DrawString(10, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT") + ": ", 100);
+	Gui::DrawString(10, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT") + ": ", 105);
 	GFX::DrawSet(set_figure_Amount_idx, Positions[0].x, Positions[0].y);
 	GFX::DrawSet(set_selector_idx, Positions[selectedFigur - 1].x, Positions[0].y);
 
-	Gui::DrawString(10, Positions[4].y + 13, 0.5f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT") + ": ", 100);
+	Gui::DrawString(10, Positions[4].y + 13, 0.5f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT") + ": ", 105);
 	GFX::DrawSet(set_player_Amount_idx, Positions[4].x, Positions[4].y);
 	GFX::DrawSet(set_selector_idx, Positions[4 + (selectedPlayer) - 2].x, Positions[4].y);
 
-	Gui::DrawString(10, Positions[7].y + 13, 0.5f, TEXT_COLOR, Lang::get("ENABLE_AI") + ": ", 100);
+	Gui::DrawString(10, Positions[7].y + 13, 0.5f, TEXT_COLOR, Lang::get("ENABLE_COMPUTER") + ": ", 105);
 	GFX::DrawSet(set_use_ai_idx, Positions[7].x, Positions[7].y);
 	GFX::DrawSet(set_selector_idx, Positions[(useAI ? 8 : 7)].x, Positions[7].y);
 
@@ -83,6 +83,11 @@ static void DrawGameStart(const uint8_t selectedPlayer, const uint8_t selectedFi
 	C3D_FrameEnd(0);
 }
 
+/*
+	GameStart.. aber auch bekannt als "Spiel-Einstellungen".
+
+	bool allowCancel: Ob die Selektion abgebrochen werden kann oder nicht.
+*/
 GameData Overlays::PrepareGame(bool allowCancel) {
 	GameData dt = { 2, 1, false };
 	bPos = 50;

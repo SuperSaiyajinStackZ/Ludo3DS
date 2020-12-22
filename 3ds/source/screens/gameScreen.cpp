@@ -38,26 +38,24 @@ extern bool touching(touchPosition touch, Structs::ButtonPos button);
 */
 void GameScreen::DrawPlayer(uint8_t player) const {
 	for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
-		if (this->currentGame->GetUsed(player, figur)) {
-			const uint8_t position = this->currentGame->GetPosition(player, figur);
+		const uint8_t position = this->currentGame->GetPosition(player, figur);
 
-			/* 0 --> Startfeld. */
-			if (position == 0) {
-				GFX::DrawFigure(player,
-					this->PlayerField[(player * 4) + figur].x,
-					this->PlayerField[(player * 4) + figur].y);
+		/* 0 --> Startfeld. */
+		if (position == 0) {
+			GFX::DrawFigure(player,
+				this->PlayerField[(player * 4) + figur].x,
+				this->PlayerField[(player * 4) + figur].y);
 
-			} else if (position > 0 && position < 41) {
-				GFX::DrawFigure(player,
-					this->MainField[GameHelper::PositionConvert(player, position) - 1].x,
-					this->MainField[GameHelper::PositionConvert(player, position) - 1].y);
+		} else if (position > 0 && position < 41) {
+			GFX::DrawFigure(player,
+				this->MainField[GameHelper::PositionConvert(player, position) - 1].x,
+				this->MainField[GameHelper::PositionConvert(player, position) - 1].y);
 
-			/* Falls wir in den Eingangs-Bereich kommen. */
-			} else if (position > 40) {
-				GFX::DrawFigure(player,
-					this->EingangField[(player * 4) + (position - 41)].x,
-					this->EingangField[(player * 4) + (position - 41)].y);
-			}
+		/* Falls wir in den Eingangs-Bereich kommen. */
+		} else if (position > 40) {
+			GFX::DrawFigure(player,
+				this->EingangField[(player * 4) + (position - 41)].x,
+				this->EingangField[(player * 4) + (position - 41)].y);
 		}
 	}
 }
@@ -125,7 +123,7 @@ void GameScreen::DisplayGame(void) const {
 
 	/* Falls wir eine Figur Selektion erwarten. */
 	if (this->awaitFigurSelect) {
-		GFX::Dice(this->ergebnis, 160, 115);
+		GFX::Dice(this->currentGame->GetErgebnis(), 160, 115);
 		Gui::DrawStringCentered(0, 80, 0.6f, TEXT_COLOR, Lang::get("SELECT_FIGURE"), 390);
 
 	} else {
@@ -134,14 +132,14 @@ void GameScreen::DisplayGame(void) const {
 
 	Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("SELECT_INSTRUCTIONS"), 390);
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
-	GFX::DrawBaseBottom();
 
+	Gui::ScreenDraw(Bottom);
+	GFX::DrawSet(set_bottom_bg_idx, 0, 0);
 	GFX::DrawField();
-
 	this->DrawPlayers();
 
 	if (this->awaitFigurSelect) {
-		this->DrawSelection(this->figurSelection);
+		this->DrawSelection(this->currentGame->GetSelectedFigur());
 
 	} else {
 		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
@@ -171,7 +169,11 @@ void GameScreen::DisplaySub(void) const {
 	Gui::DrawStringCentered(0, 70, 0.6f, TEXT_COLOR, Lang::get("CURRENT_PLAYER") +
 							std::to_string(this->currentGame->GetCurrentPlayer() + 1), 390);
 
-	Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("B_BACK"), 390);
+	Gui::DrawStringCentered(0, 90, 0.6f, TEXT_COLOR, Lang::get("COMPUTER_ENABLED") +
+							(this->currentGame->GetAI() ? Lang::get("YES") : Lang::get("NO")), 390);
+
+	Gui::DrawStringCentered(0, 160, 0.6f, TEXT_COLOR, Lang::get("SELECT_EXIT"), 390);
+	Gui::DrawStringCentered(0, 180, 0.6f, TEXT_COLOR, Lang::get("B_BACK"), 390);
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 
 	Gui::ScreenDraw(Bottom);
@@ -242,6 +244,7 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (hDown & KEY_B) this->isSub = false;
+	if (hDown & KEY_SELECT) exiting = true; // Sollen wir dies auf SELECT setzen?
 
 	if (hDown & KEY_DOWN) {
 		if (this->subSel < 4) this->subSel++;
@@ -368,7 +371,7 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 		if (hHeld & KEY_SELECT) Msg::HelperBox(Lang::get("GAME_INSTR_1"));
 
 		if (hDown & KEY_X) {
-			this->ergebnis = Overlays::RollDiceOverlay(); // Würfeln!
+			this->currentGame->SetErgebnis(Overlays::RollDiceOverlay()); // Würfeln!
 
 			bool confirmation = false;
 
@@ -385,7 +388,7 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 				Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("CURRENT_PLAYER") +
 								std::to_string(this->currentGame->GetCurrentPlayer() + 1), 390);
 
-				GFX::Dice(this->ergebnis, 160, 80);
+				GFX::Dice(this->currentGame->GetErgebnis(), 160, 80);
 				Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("A_CONFIRM"), 390);
 				C3D_FrameEnd(0);
 
@@ -397,7 +400,7 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 
 			for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
 				if (GameHelper::CanMove(this->currentGame,
-					this->currentGame->GetCurrentPlayer(), figur, this->ergebnis)) {
+					this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
 
 					this->GetFirstAvlFigur();
 					this->awaitFigurSelect = true;
@@ -414,11 +417,11 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 	Gehe zur nächsten Figur, falls verfügbar.
 */
 void GameScreen::NextFigur() {
-	if (this->figurSelection == this->currentGame->GetFigurAmount() - 1) return; // Bereits an der letzten Figur.
+	if (this->currentGame->GetSelectedFigur() == this->currentGame->GetFigurAmount() - 1) return; // Bereits an der letzten Figur.
 
-	for (uint8_t cFigur = this->figurSelection + 1; cFigur < this->currentGame->GetFigurAmount(); cFigur++) {
-		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->ergebnis)) {
-			this->figurSelection = cFigur;
+	for (uint8_t cFigur = this->currentGame->GetSelectedFigur() + 1; cFigur < this->currentGame->GetFigurAmount(); cFigur++) {
+		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
+			this->currentGame->SetSelectedFigur(cFigur);
 			break;
 		}
 	}
@@ -428,11 +431,11 @@ void GameScreen::NextFigur() {
 	Gehe zur vorherigen Figur, falls verfügbar.
 */
 void GameScreen::PreviousFigur() {
-	if (this->figurSelection == 0) return; // Es gibt kein -1.
+	if (this->currentGame->GetSelectedFigur() == 0) return; // Es gibt kein -1.
 
-	for (uint8_t cFigur = this->figurSelection - 1; cFigur >= 0; cFigur--) {
-		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->ergebnis)) {
-			this->figurSelection = cFigur;
+	for (uint8_t cFigur = this->currentGame->GetSelectedFigur() - 1; cFigur >= 0; cFigur--) {
+		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
+			this->currentGame->SetSelectedFigur(cFigur);
 			break;
 		}
 	}
@@ -443,8 +446,8 @@ void GameScreen::PreviousFigur() {
 */
 void GameScreen::GetFirstAvlFigur() {
 	for (uint8_t cFigur = 0; cFigur < this->currentGame->GetFigurAmount(); cFigur++) {
-		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->ergebnis)) {
-			this->figurSelection = cFigur;
+		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
+			this->currentGame->SetSelectedFigur(cFigur);
 			break;
 		}
 	}
@@ -481,7 +484,7 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (hDown & KEY_TOUCH) {
 		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
 			if (touching(touch, this->GetFigurTouchIndex(this->currentGame->GetCurrentPlayer(), i))) {
-				this->figurSelection = i;
+				this->currentGame->SetSelectedFigur(i);
 
 				const bool canCont = this->Play();
 				if (canCont) this->awaitFigurSelect = false; // Weil wir spielen konnten, erwarten wir keine Figur Selektion.
@@ -489,7 +492,7 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 				if (canCont) {
 					/* Führe die Kick Aktion aus. */
 					GameHelper::KickAction(this->currentGame,
-						this->currentGame->GetCurrentPlayer(), this->figurSelection);
+						this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 				}
 
 				if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
@@ -514,7 +517,7 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 		if (canCont) {
 			/* Führe die Kick Aktion aus. */
 			GameHelper::KickAction(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->figurSelection);
+				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
@@ -536,16 +539,16 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 	Wiedergibt (false), falls nicht spielbar.
 */
 bool GameScreen::Play() {
-	const uint8_t position = this->currentGame->GetPosition(this->currentGame->GetCurrentPlayer(), this->figurSelection);
+	const uint8_t position = this->currentGame->GetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 
 	/* 0 --> Auf Feld 1, falls das Ergebnis eine 6 war, ansonsten ungültig. */
 	if (position == 0) {
-		if (this->ergebnis == 6) {
+		if (this->currentGame->GetErgebnis() == 6) {
 			if (!GameHelper::DoesOwnFigurBlock(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->figurSelection, 1)) {
+				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1)) {
 
-					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->figurSelection, 1);
-					this->canContinue = true;
+					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1);
+					this->currentGame->SetCanContinue(true);
 					return true;
 
 				} else {
@@ -558,23 +561,22 @@ bool GameScreen::Play() {
 
 			/* Falls die Position nicht 0 ist. */
 		} else {
-		if (position + this->ergebnis < 45) {
+		if (position + this->currentGame->GetErgebnis() < 45) {
 			if (!GameHelper::DoesOwnFigurBlock(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->figurSelection, this->ergebnis)) {
-					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->figurSelection,
-						position + this->ergebnis);
+				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), this->currentGame->GetErgebnis())) {
+					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(),
+						position + this->currentGame->GetErgebnis());
 
 
 					GameHelper::MarkAsDone(this->currentGame,
-						this->currentGame->GetCurrentPlayer(), this->figurSelection);
+						this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 
 
 					for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
-						GameHelper::AdditionalDoneCheck(this->currentGame,
-							this->currentGame->GetCurrentPlayer(), i);
+						GameHelper::AdditionalDoneCheck(this->currentGame, this->currentGame->GetCurrentPlayer(), i);
 					}
 
-					this->canContinue = this->ergebnis == 6;
+					this->currentGame->SetCanContinue(this->currentGame->GetErgebnis() == 6);
 					return true;
 
 				} else {
@@ -594,11 +596,11 @@ bool GameScreen::Play() {
 */
 void GameScreen::NextPHandle() {
 	/* Setze Werte zurück für den nächsten Zug. */
-	this->ergebnis = 0;
-	this->figurSelection = 0;
+	this->currentGame->SetErgebnis(0);
+	this->currentGame->SetSelectedFigur(0);
 
-	if (this->canContinue) {
-		this->canContinue = false;
+	if (this->currentGame->GetCanContinue()) {
+		this->currentGame->SetCanContinue(false);
 		return;
 	}
 
@@ -612,20 +614,20 @@ void GameScreen::NextPHandle() {
 }
 
 void GameScreen::AIHandle() {
-	this->ergebnis = Overlays::RollDiceOverlay(true); // Würfel mit Verzögerung.
+	this->currentGame->SetErgebnis(Overlays::RollDiceOverlay(true)); // Würfel mit Verzögerung.
 
 	bool canMove = false, confirmation = false;
 	int8_t res = -1; // int8_t.. damit wir -1 benutzen können.
 
 	for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
 		if (GameHelper::CanMove(this->currentGame,
-			this->currentGame->GetCurrentPlayer(), figur, this->ergebnis)) {
+			this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
 
 			/* Fokussiert aufs kicken. ;P */
 			if (GameHelper::CanKick(this->currentGame,
 				this->currentGame->GetCurrentPlayer(), figur)) {
 
-				this->figurSelection = figur;
+				this->currentGame->SetSelectedFigur(figur);
 				canMove = true;
 				break;
 
@@ -648,7 +650,7 @@ void GameScreen::AIHandle() {
 		Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("CURRENT_PLAYER") +
 						std::to_string(this->currentGame->GetCurrentPlayer() + 1), 390);
 
-		GFX::Dice(this->ergebnis, 160, 80);
+		GFX::Dice(this->currentGame->GetErgebnis(), 160, 80);
 		Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("A_CONFIRM"), 390);
 		C3D_FrameEnd(0);
 
@@ -658,7 +660,7 @@ void GameScreen::AIHandle() {
 
 	if (!canMove) {
 		if (res != -1) {
-			this->figurSelection = res;
+			this->currentGame->SetSelectedFigur(res);
 			canMove = true;
 		}
 	}
@@ -668,7 +670,7 @@ void GameScreen::AIHandle() {
 
 		if (canCont) {
 			/* Führe die Kick Aktion aus. */
-			GameHelper::KickAction(this->currentGame, this->currentGame->GetCurrentPlayer(), this->figurSelection);
+			GameHelper::KickAction(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {

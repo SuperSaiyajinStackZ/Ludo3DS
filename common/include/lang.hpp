@@ -32,7 +32,7 @@
 
 namespace Lang {
 	std::string get(const std::string &key);
-	void load(int lang);
+	void load(uint8_t lang);
 };
 
 #endif
