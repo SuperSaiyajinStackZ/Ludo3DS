@@ -273,16 +273,12 @@ bool GameHelper::CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 		if (ergebnis == 6) {
 			const uint8_t TempPos = GameHelper::PositionConvert(player, game->GetPosition(player, figur) + 1);
 
-			/* Überprüfe für alle Figuren aller Spielers. */
-			for (uint8_t player2 = 0; player2 < game->GetPlayerAmount(); player2++) {
-				for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
+			/* Überprüfe für alle Figuren. */
+			for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
+				if (figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
+					const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur2));
 
-					if (player2 != player && figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
-						const uint8_t Position = GameHelper::PositionConvert(player2,
-													game->GetPosition(player2, figur2));
-
-						if (TempPos == Position) return false; // TempPos passt zu Position -> Blockiert!
-					}
+					if (TempPos == Position) return false; // TempPos passt zu Position -> Blockiert!
 				}
 			}
 
@@ -300,15 +296,11 @@ bool GameHelper::CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 		const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur) + ergebnis);
 
 		/* Überprüfe außerhalb des Hauses. */
-		for (uint8_t player2 = 0; player2 < game->GetPlayerAmount(); player2++) {
-			for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
+		for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
+			if (figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
+				const uint8_t Position2 = GameHelper::PositionConvert(player, game->GetPosition(player, figur2));
 
-				if (player2 != player && figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
-
-					const uint8_t Position2 = GameHelper::PositionConvert(player2, game->GetPosition(player2, figur2));
-
-					if (Position == Position2) return false; // Position passt zu Position2 -> Blockiert!
-				}
+				if (Position == Position2) return false; // Position passt zu Position2 -> Blockiert!
 			}
 		}
 
@@ -321,7 +313,6 @@ bool GameHelper::CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 
 		for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
 			if (figur2 != figur) {
-
 				const uint8_t Position2 = game->GetPosition(player, figur2);
 
 				if (Position2 == Position) return false; // Position bereits benutzt.

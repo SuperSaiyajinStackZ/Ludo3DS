@@ -1,5 +1,6 @@
 --atlas -f rgba8888 -z auto
 
+sprites/banner.png
 sprites/Ludo3DS.png
 sprites/stackZ.png
 sprites/universal-core.png

@@ -29,7 +29,6 @@
 
 /* Hier sind alle notwendigen Headers gelistet. */
 #include "gfx.hpp"
-#include "kbd.hpp"
 #include "lang.hpp"
 #include "msg.hpp"
 #include "overlay.hpp"

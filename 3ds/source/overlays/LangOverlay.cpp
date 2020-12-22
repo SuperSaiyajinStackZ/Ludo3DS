@@ -28,16 +28,16 @@
 
 extern bool touching(touchPosition touch, Structs::ButtonPos button);
 const std::vector<Structs::ButtonPos> langBlocks = {
-	{ 37, 32, 20, 20 },
-	{ 37, 72, 20, 20 },
-	{ 37, 112, 20, 20 },
-	{ 37, 152, 20, 20 },
-	{ 37, 188, 20, 20 },
-	{ 177, 32, 20, 20 },
-	{ 177, 72, 20, 20 },
-	{ 177, 112, 20, 20 },
-	{ 177, 152, 20, 20 },
-	{ 177, 188, 20, 20 }
+	{ 37, 32, 18, 18 },
+	{ 37, 72, 18, 18 },
+	{ 37, 112, 18, 18 },
+	{ 37, 152, 18, 18 },
+	{ 37, 188, 18, 18 },
+	{ 177, 32, 18, 18 },
+	{ 177, 72, 18, 18 },
+	{ 177, 112, 18, 18 },
+	{ 177, 152, 18, 18 },
+	{ 177, 188, 18, 18 }
 };
 
 /*
@@ -59,13 +59,17 @@ static void Draw(const uint8_t &sltLang) {
 	Gui::Draw_Rect(0, 0, 320, 25, BAR_COLOR);
 	Gui::Draw_Rect(0, 215, 320, 25, BAR_COLOR);
 
+	uint8_t clrIndex = 0;
 	for (uint8_t language = 0; language < 2; language++) {
-		if (sltLang == language) Gui::drawAnimatedSelector(langBlocks[language].x, langBlocks[language].y, langBlocks[language].w, langBlocks[language].h, .010f, BUTTON_SELECTED, BUTTON_UNSELECTED);
-		else Gui::Draw_Rect(langBlocks[language].x, langBlocks[language].y, langBlocks[language].w, langBlocks[language].h, BUTTON_UNSELECTED);
+		if (clrIndex < 4) clrIndex++;
+		else clrIndex = 1;
+
+		GFX::DrawSet(set_chip_1_idx + (clrIndex - 1), langBlocks[language].x, langBlocks[language].y);
+		if (sltLang == language) GFX::DrawSet(set_chip_selector_idx, langBlocks[language].x, langBlocks[language].y);
 	}
 
-	Gui::DrawString(langBlocks[0].x + 25, langBlocks[0].y, 0.7f, TEXT_COLOR, "Deutsch", 320);
-	Gui::DrawString(langBlocks[1].x + 25, langBlocks[1].y, 0.7f, TEXT_COLOR, "English", 320);
+	Gui::DrawString(langBlocks[0].x + 25, langBlocks[0].y - 2, 0.7f, TEXT_COLOR, "Deutsch", 320);
+	Gui::DrawString(langBlocks[1].x + 25, langBlocks[1].y - 2, 0.7f, TEXT_COLOR, "English", 320);
 	C3D_FrameEnd(0);
 }
 

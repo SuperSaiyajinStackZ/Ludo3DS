@@ -29,8 +29,8 @@
 #include <vector>
 
 const std::vector<Structs::ButtonPos> promptBtn = {
-	{ 10, 100, 140, 40 }, // Ja.
-	{ 170, 100, 140, 40 } // Nein.
+	{ 10, 100, 140, 35 }, // Ja.
+	{ 170, 100, 140, 35 } // Nein.
 };
 
 extern touchPosition touch;
@@ -52,17 +52,18 @@ bool Msg::promptMsg(std::string msg) {
 
 		GFX::DrawBaseTop();
 		Gui::Draw_Rect(0, 60, 400, 120, BOX_COLOR);
-		Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.7f, msg)) / 2 - 10, 0.7f, TEXT_COLOR, msg, 390, 90);
+		Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.6f, msg)) / 2 - 10, 0.6f, TEXT_COLOR, msg, 390, 90);
 
 		GFX::DrawBaseBottom();
 
 		for (int i = 0; i < 2; i++) {
-			if (selection == i) Gui::drawAnimatedSelector(promptBtn[i].x, promptBtn[i].y, 140, 40, .010f, BUTTON_SELECTED, BUTTON_UNSELECTED);
-			else Gui::Draw_Rect(promptBtn[i].x, promptBtn[i].y, 140, 40, BUTTON_UNSELECTED);
+			GFX::DrawSet(set_button_idx, promptBtn[i].x, promptBtn[i].y);
+			if (selection == i) GFX::DrawSet(set_button_selector_idx, promptBtn[i].x, promptBtn[i].y);
 		}
 
-		Gui::DrawStringCentered(-150 + 70, 110, 0.7f, TEXT_COLOR, Lang::get("YES"), 140);
-		Gui::DrawStringCentered(150 - 70, 110, 0.7f, TEXT_COLOR, Lang::get("NO"), 140);
+
+		Gui::DrawStringCentered(-150 + 70, promptBtn[0].y + 5, 0.7f, TEXT_COLOR, Lang::get("YES"), 135);
+		Gui::DrawStringCentered(150 - 70, promptBtn[1].y + 5, 0.7f, TEXT_COLOR, Lang::get("NO"), 135);
 		C3D_FrameEnd(0);
 
 		gspWaitForVBlank();
@@ -99,7 +100,7 @@ void Msg::DisplayWaitMsg(std::string waitMsg, ...) {
 	Gui::Draw_Rect(0, 60, 400, 120, BOX_COLOR);
 
 	Gui::Draw_Rect(0, 215, 400, 25, BAR_COLOR);
-	Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.7f, waitMsg)) / 2, 0.7f, TEXT_COLOR, waitMsg, 390, 70);
+	Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.6f, waitMsg)) / 2, 0.6f, TEXT_COLOR, waitMsg, 390, 70);
 	Gui::DrawStringCentered(0, 217, 0.6f, TEXT_COLOR, Lang::get("A_CONTINUE"), 390);
 
 	GFX::DrawBaseBottom();
@@ -126,7 +127,7 @@ void Msg::DisplayMsg(std::string Message) {
 
 	GFX::DrawBaseTop();
 	Gui::Draw_Rect(0, 70, 400, 110, BOX_COLOR);
-	Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.7f, Message)) / 2, 0.7f, TEXT_COLOR, Message, 390, 70);
+	Gui::DrawStringCentered(0, (240 - Gui::GetStringHeight(0.6f, Message)) / 2, 0.6f, TEXT_COLOR, Message, 390, 70);
 
 	GFX::DrawBaseBottom();
 	C3D_FrameEnd(0);
@@ -135,9 +136,7 @@ void Msg::DisplayMsg(std::string Message) {
 /*
 	Zeigt eine noch nicht implementierte Nachricht an.
 */
-void Msg::NotImplementedYet(void) {
-	Msg::DisplayWaitMsg(Lang::get("NOT_IMPLEMENTED_YET"));
-}
+void Msg::NotImplementedYet(void) { Msg::DisplayWaitMsg(Lang::get("NOT_IMPLEMENTED_YET")); };
 
 /*
 	Zeige eine Hilfsbox an.

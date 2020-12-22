@@ -29,12 +29,20 @@
 
 #include "common.hpp"
 
+struct GameData {
+	int8_t pAmount;
+	int8_t fAmount;
+	bool useAI;
+};
+
 namespace Overlays {
 	void SplashOverlay();
 	void CreditsOverlay();
 	void RulesOverlay();
 	void LanguageOverlay();
 	uint8_t RollDiceOverlay(bool AIRoll = false);
+
+	GameData PrepareGame(bool allowCancel = false);
 };
 
 #endif

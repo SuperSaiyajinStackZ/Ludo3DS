@@ -95,14 +95,11 @@ void GameScreen::DrawSelection(uint8_t selection) const {
 	Initialisiere den Spiele-Screen.
 */
 GameScreen::GameScreen() {
-	this->currentGame = std::make_unique<Game>(4, 4);
 	CoreHelper::GenerateSeed();
 
-	const uint8_t pAmount = KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), 2);
-	const uint8_t fAmount = KBD::SetAmount(4, Lang::get("ENTER_FIGUREAMOUNT"), 1);
-	this->currentGame = std::make_unique<Game>(pAmount, fAmount);
-
-	this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
+	GameData dt = Overlays::PrepareGame();
+	this->currentGame = std::make_unique<Game>(dt.pAmount, dt.fAmount);
+	this->currentGame->SetAI(dt.useAI);
 }
 
 /*
@@ -176,26 +173,22 @@ void GameScreen::DisplaySub(void) const {
 
 	Gui::DrawStringCentered(0, 218, 0.6f, TEXT_COLOR, Lang::get("B_BACK"), 390);
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
-	GFX::DrawBaseBottom();
+
+	Gui::ScreenDraw(Bottom);
+	GFX::DrawSet(set_bottom_bg_idx, 0, 0);
 
 	/* Zeige Schaltflächen. */
-	for (int i = 0; i < 10; i++) {
-		if (this->subSel == i) Gui::drawAnimatedSelector(this->subBtn[i].x, this->subBtn[i].y, 140, 40, .030f, BUTTON_SELECTED, BUTTON_UNSELECTED);
-		else Gui::Draw_Rect(this->subBtn[i].x, this->subBtn[i].y, this->subBtn[i].w, this->subBtn[i].h, BUTTON_UNSELECTED);
+	for (int i = 0; i < 5; i++) {
+		GFX::DrawSet(set_button_idx, this->subBtn[i].x, this->subBtn[i].y);
+		if (this->subSel == i) GFX::DrawSet(set_button_selector_idx, this->subBtn[i].x, this->subBtn[i].y);
 	}
 
-	/* Schaltflächen Text. */
-	Gui::DrawStringCentered(-80, this->subBtn[0].y + 10, 0.6f, TEXT_COLOR, Lang::get("LOAD_GAME"), 135);
-	Gui::DrawStringCentered(-80, this->subBtn[1].y + 10, 0.6f, TEXT_COLOR, Lang::get("SAVE_GAME"), 135);
-	Gui::DrawStringCentered(-80, this->subBtn[2].y + 10, 0.6f, TEXT_COLOR, Lang::get("EXIT_GAME"), 135);
-	Gui::DrawStringCentered(-80, this->subBtn[3].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_RULES"), 135);
-	Gui::DrawStringCentered(-80, this->subBtn[4].y + 10, 0.6f, TEXT_COLOR, Lang::get("SHOW_CREDITS"), 135);
-
-	Gui::DrawStringCentered(80, this->subBtn[5].y + 10, 0.6f, TEXT_COLOR, Lang::get("CHANGE_LANGUAGE"), 135);
-	Gui::DrawStringCentered(80, this->subBtn[6].y + 10, 0.6f, TEXT_COLOR, Lang::get("NEW_GAME"), 135);
-	Gui::DrawStringCentered(80, this->subBtn[7].y + 10, 0.6f, TEXT_COLOR, Lang::get("TOGGLE_AI"), 135);
-	Gui::DrawStringCentered(80, this->subBtn[8].y + 10, 0.6f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT"), 135);
-	Gui::DrawStringCentered(80, this->subBtn[9].y + 10, 0.6f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT"), 135);
+	/* Schaltflächen Texte. */
+	Gui::DrawStringCentered(0, this->subBtn[0].y + 10, 0.5f, TEXT_COLOR, Lang::get("LOAD_GAME"), 135);
+	Gui::DrawStringCentered(0, this->subBtn[1].y + 10, 0.5f, TEXT_COLOR, Lang::get("SAVE_GAME"), 135);
+	Gui::DrawStringCentered(0, this->subBtn[2].y + 10, 0.5f, TEXT_COLOR, Lang::get("GAME_SETTINGS"), 135);
+	Gui::DrawStringCentered(0, this->subBtn[3].y + 10, 0.5f, TEXT_COLOR, Lang::get("LANGUAGE"), 135);
+	Gui::DrawStringCentered(0, this->subBtn[4].y + 10, 0.5f, TEXT_COLOR, Lang::get("CREDITS"), 135);
 
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
@@ -205,12 +198,8 @@ void GameScreen::DisplaySub(void) const {
 	Der Haupt-Zeichnungs teil.
 */
 void GameScreen::Draw(void) const {
-	if (!this->isSub) {
-		this->DisplayGame();
-
-	} else {
-		this->DisplaySub();
-	}
+	if (!this->isSub) this->DisplayGame();
+	else this->DisplaySub();
 }
 
 /*
@@ -220,8 +209,12 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 	/* Falls das Spiel vorbei ist. */
 	if (this->gameOver) {
 		if (Msg::promptMsg(Lang::get("NEXT_GAME"))) {
-			Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
-			this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), this->currentGame->GetFigurAmount());
+			const GameData dt = Overlays::PrepareGame(true);
+
+			if (dt.fAmount == -1) exiting = true; // -1 == Abgebrochen.
+
+			this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+			this->currentGame->SetAI(dt.useAI);
 			this->gameOver = false;
 
 		} else {
@@ -252,20 +245,10 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 	if (hDown & KEY_DOWN) {
 		if (this->subSel < 4) this->subSel++;
-		else if (this->subSel > 4 && this->subSel < 9) this->subSel++;
 	}
 
 	if (hDown & KEY_UP) {
-		if (this->subSel > 5) this->subSel--;
-		else if (this->subSel < 5 && this->subSel > 0) this->subSel--;
-	}
-
-	if (hDown & KEY_RIGHT) {
-		if (this->subSel < 5) this->subSel += 5;
-	}
-
-	if (hDown & KEY_LEFT) {
-		if (this->subSel > 4) this->subSel -= 5;
+		if (this->subSel > 0) this->subSel--;
 	}
 
 	if (hDown & KEY_A) {
@@ -297,59 +280,29 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 				}
 				break;
 
-			case 2:
-				/* Spiel Beenden. */
-				if (Msg::promptMsg(Lang::get("EXIT_GAME_PRMPT"))) {
-					exiting = true;
-					this->isSub = false;
+			case 2: {
+					/* Spiel Einstellungen. */
+					if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
+						const GameData dt = Overlays::PrepareGame(true);
+
+						if (dt.fAmount == -1) return; // -1 == Abgebrochen.
+
+						this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+						this->currentGame->SetAI(dt.useAI);
+						this->isSub = false;
+					}
 				}
 				break;
 
 			case 3:
-				/* Regeln anzeigen. */
-				Overlays::RulesOverlay();
-				break;
-
-			case 4:
-				/* Credits anzeigen. */
-				Overlays::CreditsOverlay();
-				break;
-
-			case 5:
-				/* Sprache ändern. */
+				/* Sprache Ändern. */
 				Overlays::LanguageOverlay();
 				break;
 
-			case 6:
-				/* Spiel Neustarten. */
-				if (Msg::promptMsg(Lang::get("NEW_GAME_PRMPT"))) {
-					Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
-					this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), this->currentGame->GetFigurAmount());
-					this->awaitFigurSelect = false;
-					this->isSub = false;
-				}
+			case 4:
+				/* Credits Anzeigen. */
+				Overlays::CreditsOverlay();
 				break;
-
-				case 7:
-					/* Computer De-/Aktivieren. */
-					this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
-					break;
-
-				case 8:
-					/* Spieleranzahl verändern. */
-					if (Msg::promptMsg(Lang::get("PLAYERAMOUNT_PRMPT"))) {
-						this->currentGame->InitNewGame((uint8_t)KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), this->currentGame->GetPlayerAmount()), this->currentGame->GetFigurAmount());
-						this->isSub = false;
-					}
-					break;
-
-				case 9:
-					/* Figurenanzahl verändern. */
-					if (Msg::promptMsg(Lang::get("FIGUREAMOUNT_PRMPT"))) {
-						this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), (uint8_t)KBD::SetAmount(4, Lang::get("ENTER_FIGURERAMOUNT"), this->currentGame->GetFigurAmount()));
-						this->isSub = false;
-					}
-					break;
 		}
 	}
 
@@ -379,51 +332,25 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 				this->isSub = false;
 			}
 
-		/* Spiel Beenden. */
+		/* Spiel Einstellungen. */
 		} else if (touching(touch, this->subBtn[2])) {
-			if (Msg::promptMsg(Lang::get("EXIT_GAME_PRMPT"))) {
-				exiting = true;
+			if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
+				const GameData dt = Overlays::PrepareGame(true);
+
+				if (dt.fAmount == -1) return; // -1 == Abgebrochen.
+
+				this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+				this->currentGame->SetAI(dt.useAI);
 				this->isSub = false;
 			}
 
-		/* Regeln anzeigen. */
+		/* Sprache Ändern. */
 		} else if (touching(touch, this->subBtn[3])) {
-			Overlays::RulesOverlay();
-
-		/* Credits anzeigen. */
-		} else if (touching(touch, this->subBtn[4])) {
-			Overlays::CreditsOverlay();
-
-		/* Sprache ändern. */
-		} else if (touching(touch, this->subBtn[5])) {
 			Overlays::LanguageOverlay();
 
-		/* Spiel Neustarten. */
-		} else if (touching(touch, this->subBtn[6])) {
-			if (Msg::promptMsg(Lang::get("NEW_GAME_PRMPT"))) {
-				Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
-				this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), this->currentGame->GetFigurAmount());
-				this->awaitFigurSelect = false;
-				this->isSub = false;
-			}
-
-		} else if (touching(touch, this->subBtn[7])) {
-			/* Computer De-/Aktivieren. */
-			this->currentGame->SetAI(Msg::promptMsg(Lang::get("PLAY_AGAINST_COMPUTER")));
-
-		} else if (touching(touch, this->subBtn[8])) {
-			/* Spieleranzahl verändern. */
-			if (Msg::promptMsg(Lang::get("PLAYERAMOUNT_PRMPT"))) {
-				this->currentGame->InitNewGame((uint8_t)KBD::SetAmount(4, Lang::get("ENTER_PLAYERAMOUNT"), this->currentGame->GetPlayerAmount()), this->currentGame->GetFigurAmount());
-				this->isSub = false;
-			}
-
-		} else if (touching(touch, this->subBtn[9])) {
-			/* Figurenanzahl verändern. */
-			if (Msg::promptMsg(Lang::get("FIGUREAMOUNT_PRMPT"))) {
-				this->currentGame->InitNewGame(this->currentGame->GetPlayerAmount(), (uint8_t)KBD::SetAmount(4, Lang::get("ENTER_FIGURERAMOUNT"), this->currentGame->GetFigurAmount()));
-				this->isSub = false;
-			}
+		/* Credits Anzeigen. */
+		} else if (touching(touch, this->subBtn[4])) {
+			Overlays::CreditsOverlay();
 		}
 	}
 }
@@ -438,10 +365,7 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 		this->AIHandle();
 
 	} else {
-
-		if (hHeld & KEY_SELECT) {
-			Msg::HelperBox(Lang::get("GAME_INSTR_1"));
-		}
+		if (hHeld & KEY_SELECT) Msg::HelperBox(Lang::get("GAME_INSTR_1"));
 
 		if (hDown & KEY_X) {
 			this->ergebnis = Overlays::RollDiceOverlay(); // Würfeln!
@@ -496,7 +420,6 @@ void GameScreen::NextFigur() {
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->ergebnis)) {
 			this->figurSelection = cFigur;
 			break;
-
 		}
 	}
 }
@@ -520,7 +443,6 @@ void GameScreen::PreviousFigur() {
 */
 void GameScreen::GetFirstAvlFigur() {
 	for (uint8_t cFigur = 0; cFigur < this->currentGame->GetFigurAmount(); cFigur++) {
-
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->ergebnis)) {
 			this->figurSelection = cFigur;
 			break;
@@ -535,18 +457,12 @@ Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur)
 	const uint8_t position = this->currentGame->GetPosition(player, figur);
 
 	/* 0 und 41+ haben eine spezielle handlung für die Touch Position. */
-	if (position == 0) {
-		return this->PlayerField[(player * 4) + figur];
-	}
+	if (position == 0) return this->PlayerField[(player * 4) + figur];
 
 	/* Feld Handling. */
-	if (position > 0 && position < 41) {
-		return this->MainField[GameHelper::PositionConvert(player, position) - 1];
-	}
+	if (position > 0 && position < 41) return this->MainField[GameHelper::PositionConvert(player, position) - 1];
 
-	if (position > 40) {
-		return this->EingangField[(player * 4) + (position - 41)];
-	}
+	if (position > 40) return this->EingangField[(player * 4) + (position - 41)];
 
 	return { 0,  0,  0,  0 };
 }
@@ -556,17 +472,11 @@ Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur)
 	Der Selektion Teil für die Figur.
 */
 void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
-	if (hHeld & KEY_SELECT) {
-		Msg::HelperBox(Lang::get("GAME_INSTR_2"));
-	}
+	if (hHeld & KEY_SELECT) Msg::HelperBox(Lang::get("GAME_INSTR_2"));
 
-	if ((hDown & KEY_RIGHT) || (hDown & KEY_R)) {
-		this->NextFigur();
-	}
+	if ((hDown & KEY_RIGHT) || (hDown & KEY_R)) this->NextFigur();
 
-	if ((hDown & KEY_LEFT) || (hDown & KEY_L)) {
-		this->PreviousFigur();
-	}
+	if ((hDown & KEY_LEFT) || (hDown & KEY_L)) this->PreviousFigur();
 
 	if (hDown & KEY_TOUCH) {
 		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
@@ -754,13 +664,11 @@ void GameScreen::AIHandle() {
 	}
 
 	if (canMove) {
-
 		const bool canCont = this->Play();
 
 		if (canCont) {
 			/* Führe die Kick Aktion aus. */
-			GameHelper::KickAction(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->figurSelection);
+			GameHelper::KickAction(this->currentGame, this->currentGame->GetCurrentPlayer(), this->figurSelection);
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
