@@ -43,9 +43,9 @@ const std::vector<Structs::ButtonPos> langBlocks = {
 /*
 	Zeichne das Sprachen-Auswahl Overlay.
 
-	const uint8_t &sltLang: Die aktuelle ausgewählte Sprache.
+	const uint8_t sltLang: Die aktuelle ausgewählte Sprache.
 */
-static void Draw(const uint8_t &sltLang) {
+static void Draw(const uint8_t sltLang) {
 	Gui::clearTextBufs();
 	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 	C2D_TargetClear(Top, NO_COLOR);
@@ -73,9 +73,7 @@ static void Draw(const uint8_t &sltLang) {
 	C3D_FrameEnd(0);
 }
 
-/*
-	Zeige das Sprach-Auswahl Overlay.
-*/
+/* Zeige das Sprach-Auswahl Overlay. */
 void Overlays::LanguageOverlay() {
 	uint8_t selectedLang = 0;
 	bool doOut = false;

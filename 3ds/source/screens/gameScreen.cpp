@@ -60,9 +60,7 @@ void GameScreen::DrawPlayer(uint8_t player) const {
 	}
 }
 
-/*
-	Zeichne die Selektion der Figur.
-*/
+/* Zeichne die Selektion der Figur. */
 void GameScreen::DrawSelection(uint8_t selection) const {
 	if (this->awaitFigurSelect) {
 		const uint8_t player = this->currentGame->GetCurrentPlayer();
@@ -89,29 +87,23 @@ void GameScreen::DrawSelection(uint8_t selection) const {
 	}
 }
 
-/*
-	Initialisiere den Spiele-Screen.
-*/
+/* Initialisiere den Spiel-Screen. */
 GameScreen::GameScreen() {
 	CoreHelper::GenerateSeed();
 
 	GameData dt = Overlays::PrepareGame();
-	this->currentGame = std::make_unique<Game>(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
-	this->currentGame->SetAI(dt.useAI);
+	this->currentGame = std::make_unique<Game>(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
+	this->currentGame->SetAI(dt.UseAI);
 }
 
-/*
-	Zeichne alle Figuren aller Spieler.
-*/
+/* Zeichne alle Figuren aller Spieler. */
 void GameScreen::DrawPlayers() const {
 	for (uint8_t i = 0; i < this->currentGame->GetPlayerAmount(); i++) {
 		this->DrawPlayer(i);
 	}
 }
 
-/*
-	Zeige das Haupt-Spiel an.
-*/
+/* Zeige das Haupt-Spiel an. */
 void GameScreen::DisplayGame(void) const {
 	GFX::DrawBaseTop();
 	Gui::Draw_Rect(0, 0, 400, 25, BAR_COLOR);
@@ -138,10 +130,8 @@ void GameScreen::DisplayGame(void) const {
 	GFX::DrawField();
 	this->DrawPlayers();
 
-	if (this->awaitFigurSelect) {
-		this->DrawSelection(this->currentGame->GetSelectedFigur());
-
-	} else {
+	if (this->awaitFigurSelect) this->DrawSelection(this->currentGame->GetSelectedFigur());
+	else {
 		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
 			this->DrawSelection(i);
 		}
@@ -150,9 +140,7 @@ void GameScreen::DisplayGame(void) const {
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
 
-/*
-	Zeige das Unter-Menü an.
-*/
+/* Zeige das Unter-Menü an. */
 void GameScreen::DisplaySub(void) const {
 	GFX::DrawBaseTop();
 	Gui::Draw_Rect(0, 0, 400, 25, BAR_COLOR);
@@ -199,27 +187,23 @@ void GameScreen::DisplaySub(void) const {
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
 
-/*
-	Der Haupt-Zeichnungs teil.
-*/
+/* Der Haupt-Zeichnungs teil. */
 void GameScreen::Draw(void) const {
 	if (!this->isSub) this->DisplayGame();
 	else this->DisplaySub();
 }
 
-/*
-	Die HauptLogik des Spiel-Screen's.
-*/
+/* Die HauptLogik des Spiel-Screen's. */
 void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 	/* Falls das Spiel vorbei ist. */
 	if (this->gameOver) {
 		if (Msg::promptMsg(Lang::get("NEXT_GAME"))) {
 			const GameData dt = Overlays::PrepareGame(true);
 
-			if (dt.fAmount == -1) exiting = true; // -1 == Abgebrochen.
+			if (dt.FAmount == -1) exiting = true; // -1 == Abgebrochen.
 
-			this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
-			this->currentGame->SetAI(dt.useAI);
+			this->currentGame->InitNewGame(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
+			this->currentGame->SetAI(dt.UseAI);
 			this->gameOver = false;
 
 		} else {
@@ -291,10 +275,10 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 					if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
 						const GameData dt = Overlays::PrepareGame(true);
 
-						if (dt.fAmount == -1) return; // -1 == Abgebrochen.
+						if (dt.FAmount == -1) return; // -1 == Abgebrochen.
 
-						this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
-						this->currentGame->SetAI(dt.useAI);
+						this->currentGame->InitNewGame(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
+						this->currentGame->SetAI(dt.UseAI);
 						this->isSub = false;
 					}
 				}
@@ -343,10 +327,10 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 			if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
 				const GameData dt = Overlays::PrepareGame(true);
 
-				if (dt.fAmount == -1) return; // -1 == Abgebrochen.
+				if (dt.FAmount == -1) return; // -1 == Abgebrochen.
 
-				this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
-				this->currentGame->SetAI(dt.useAI);
+				this->currentGame->InitNewGame(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
+				this->currentGame->SetAI(dt.UseAI);
 				this->isSub = false;
 			}
 
@@ -415,9 +399,7 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 	}
 }
 
-/*
-	Gehe zur nächsten Figur, falls verfügbar.
-*/
+/* Gehe zur nächsten Figur, falls verfügbar. */
 void GameScreen::NextFigur() {
 	if (this->currentGame->GetSelectedFigur() == this->currentGame->GetFigurAmount() - 1) return; // Bereits an der letzten Figur.
 
@@ -429,9 +411,7 @@ void GameScreen::NextFigur() {
 	}
 }
 
-/*
-	Gehe zur vorherigen Figur, falls verfügbar.
-*/
+/* Gehe zur vorherigen Figur, falls verfügbar. */
 void GameScreen::PreviousFigur() {
 	if (this->currentGame->GetSelectedFigur() == 0) return; // Es gibt kein -1.
 
@@ -443,9 +423,7 @@ void GameScreen::PreviousFigur() {
 	}
 }
 
-/*
-	Gehe zur ersten verfügbaren Figur-Selektion.
-*/
+/* Gehe zur ersten verfügbaren Figur-Selektion. */
 void GameScreen::GetFirstAvlFigur() {
 	for (uint8_t cFigur = 0; cFigur < this->currentGame->GetFigurAmount(); cFigur++) {
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
@@ -455,9 +433,7 @@ void GameScreen::GetFirstAvlFigur() {
 	}
 }
 
-/*
-	Touch Handling für die Figuren.
-*/
+/* Touch Handling für die Figuren. */
 Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur) const {
 	const uint8_t position = this->currentGame->GetPosition(player, figur);
 
@@ -473,9 +449,7 @@ Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur)
 }
 
 
-/*
-	Der Selektion Teil für die Figur.
-*/
+/* Der Selektion Teil für die Figur. */
 void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (hHeld & KEY_SELECT) Msg::HelperBox(Lang::get("GAME_INSTR_2"));
 
@@ -586,9 +560,7 @@ bool GameScreen::Play() {
 	return false;
 }
 
-/*
-	Nächster Spieler Handle.
-*/
+/* Nächster Spieler Handle. */
 void GameScreen::NextPHandle() {
 	/* Setze Werte zurück für den nächsten Zug. */
 	this->currentGame->SetErgebnis(0);

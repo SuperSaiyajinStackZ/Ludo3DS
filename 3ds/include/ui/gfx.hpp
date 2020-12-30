@@ -56,7 +56,7 @@ namespace GFX {
 
 	void Dice(uint8_t ergebnis, int x, int y);
 
-	void DrawField(int xOffs = 15, int yOffs = 15);
+	void DrawField(uint16_t xOffs = 15, uint16_t yOffs = 15);
 };
 
 #endif

@@ -28,17 +28,13 @@
 
 extern C2D_SpriteSheet sets, sprites;
 
-/*
-	Zeichne eine basis für den Top Screen.
-*/
+/* Zeichne eine basis für den Top Screen. */
 void GFX::DrawBaseTop() {
 	Gui::ScreenDraw(Top);
 	Gui::Draw_Rect(0, 0, 400, 240, BG_COLOR);
 }
 
-/*
-	Zeichne eine basis für den Touch Screen.
-*/
+/* Zeichne eine basis für den Touch Screen. */
 void GFX::DrawBaseBottom() {
 	Gui::ScreenDraw(Bottom);
 	Gui::Draw_Rect(0, 0, 320, 240, BG_COLOR);
@@ -105,12 +101,13 @@ void GFX::DrawFigure(uint8_t player, int x, int y) {
 	int y: Die Y Position des Selektors.
 */
 void GFX::DrawPlayerSelector(uint8_t player, int x, int y) {
-	static float timer					= 0.0f;
-	const float highlight_multiplier	= fmax(0.0, fabs(fmod(timer, 1.0) - 0.5) / 0.5);
-	const u8 r							= 0 & 0xFF;
-	const u8 g							= (0 >> 8) & 0xFF;
-	const u8 b							= (0 >> 16) & 0xFF;
-	const u32 color = C2D_Color32(r + (255 - r) * highlight_multiplier, g + (255 - g) * highlight_multiplier, b + (255 - b) * highlight_multiplier, 255);
+	static float timer						= 0.0f;
+	const float highlight_multiplier		= fmax(0.0, fabs(fmod(timer, 1.0) - 0.5) / 0.5);
+	const uint8_t r							= 0 & 0xFF;
+	const uint8_t g							= (0 >> 8) & 0xFF;
+	const uint8_t b							= (0 >> 16) & 0xFF;
+
+	const uint32_t color = C2D_Color32(r + (255 - r) * highlight_multiplier, g + (255 - g) * highlight_multiplier, b + (255 - b) * highlight_multiplier, 255);
 
 	C2D_ImageTint tint;
 	C2D_SetImageTint(&tint, C2D_TopLeft, color, 1);
@@ -160,10 +157,10 @@ void GFX::Dice(uint8_t ergebnis, int x, int y) {
 /*
 	Zeichnet das SpielFeld.
 
-	int xOffs: Der X-Offset.
-	int yOffs: Der Y-Offset.
+	uint16_t xOffs: Der X-Offset.
+	uint16_t yOffs: Der Y-Offset.
 */
-void GFX::DrawField(int xOffs, int yOffs) {
+void GFX::DrawField(uint16_t xOffs, uint16_t yOffs) {
 	GFX::DrawSet(set_main_field_idx, xOffs, yOffs); // Haupt-Feld.
 
 	/* Häuser. */

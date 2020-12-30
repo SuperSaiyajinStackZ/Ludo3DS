@@ -29,9 +29,7 @@
 
 static bool hasSeeded = false;
 
-/*
-	Generiere den Seed für unseren Zufalls-Generator.
-*/
+/* Generiere den Seed für unseren Zufalls-Generator. */
 void CoreHelper::GenerateSeed() {
 	if (!hasSeeded) {
 		hasSeeded = true;
@@ -39,9 +37,7 @@ void CoreHelper::GenerateSeed() {
 	}
 }
 
-/*
-    Lasse den Würfel rollen und wiedergebe das Ergebnis.
-*/
+/* Lasse den Würfel rollen und wiedergebe das Ergebnis. */
 uint8_t CoreHelper::RollDice() {
 	if (!hasSeeded) return 0; // Da wir noch nicht geseeded haben, wiedergebe 0.
 

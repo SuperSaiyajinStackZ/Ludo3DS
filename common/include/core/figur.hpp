@@ -36,11 +36,15 @@ protected:
 public:
 	Figur() : Position(0), Done(false) { };
 
-	uint8_t GetPosition() const;
-	void SetPosition(uint8_t pos);
+	uint8_t GetPosition() const { return this->Position; };
+	void SetPosition(uint8_t pos) {
+		if (pos > MAX_FIELD) return; // 0 - 44 sind erlaubt, höher nicht.
 
-	bool GetDone() const;
-	void SetDone(bool isDone);
+		this->Position = pos;
+	}
+
+	bool GetDone() const { return this->Done; };
+	void SetDone(bool isDone) { this->Done = isDone; };
 };
 
 #endif

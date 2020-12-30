@@ -70,13 +70,14 @@ void Overlays::SplashOverlay() {
 
 	time_t currentTime = time(NULL);
 	struct tm *currentTimeStruct = localtime(&currentTime);
-	const uint32_t year = 1900 + currentTimeStruct->tm_year;
+	const uint16_t year = 1900 + currentTimeStruct->tm_year; // uint16_t reicht aus, weil der 3DS nur bis 2050 geht.
 
 	while(!doOut) {
 		/* Fade in effekt. */
 		if (fadeInSplash) {
 			if (fadeAlpha > 0) {
 				fadeAlpha -= 2;
+
 				if (fadeAlpha <= 0) {
 					fadeAlpha = 0;
 					fadeInSplash = 0;
@@ -95,9 +96,7 @@ void Overlays::SplashOverlay() {
 			if (swipeDelay > 0) {
 				swipeDelay--;
 
-				if (swipeDelay == 0) {
-					doSwipe = true;
-				}
+				if (swipeDelay == 0) doSwipe = true;
 			}
 		}
 
@@ -106,9 +105,7 @@ void Overlays::SplashOverlay() {
 			if (logoPos > _SPLASH_X_LOGO_POS) {
 				logoPos--;
 
-				if (logoPos == _SPLASH_X_LOGO_POS) {
-					swipedIn = true;
-				}
+				if (logoPos == _SPLASH_X_LOGO_POS) swipedIn = true;
 			}
 		}
 

@@ -46,9 +46,7 @@ bool touching(touchPosition touch, Structs::ButtonPos pos) {
 	return false;
 }
 
-/*
-	Initialisiere Ludo3DS.
-*/
+/* Initialisiere Ludo3DS. */
 static void init() {
 	romfsInit();
 	gfxInitDefault();
@@ -67,9 +65,7 @@ static void init() {
 	Gui::setScreen(std::make_unique<GameScreen>(), false, true);
 }
 
-/*
-	Die Hauptfunktion.
-*/
+/* Die Hauptfunktion. */
 int main() {
 	bool fullExit = false;
 	init();
@@ -77,8 +73,8 @@ int main() {
 	while(aptMainLoop() && !fullExit) {
 		hidScanInput();
 		touchRead(&touch);
-		uint32_t hDown = hidKeysDown();
-		uint32_t hHeld = hidKeysHeld();
+		const uint32_t hDown = hidKeysDown();
+		const uint32_t hHeld = hidKeysHeld();
 
 		Gui::clearTextBufs();
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
@@ -94,6 +90,7 @@ int main() {
 
 			if (fadeAlpha < 255) {
 				fadeAlpha += 2;
+
 				if (fadeAlpha >= 255) fullExit = true;
 			}
 		}

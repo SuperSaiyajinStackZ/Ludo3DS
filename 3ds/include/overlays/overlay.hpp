@@ -29,14 +29,12 @@
 
 #include "common.hpp"
 
-/*
-	Für die Spiel-Einstellungen.
-*/
+/* Für die Spiel-Einstellungen. */
 struct GameData {
-	int8_t pAmount;
-	int8_t fAmount;
-	bool useAI;
-	bool ThreeRolls;
+	int8_t PAmount = 2;
+	int8_t FAmount = 1;
+	bool UseAI = false;
+	bool ThreeRolls = false;
 };
 
 namespace Overlays {

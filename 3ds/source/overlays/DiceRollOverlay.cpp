@@ -96,5 +96,5 @@ uint8_t Overlays::RollDiceOverlay(bool AIRoll) {
 		}
 	}
 
-	return CoreHelper::RollDice();
+	return CoreHelper::RollDice(); // Am ende wiedergebe einfach eine zufalls Zahl zwischen 1 und 6.
 }

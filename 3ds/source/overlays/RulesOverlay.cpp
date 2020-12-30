@@ -26,9 +26,7 @@
 
 #include "common.hpp"
 
-/*
-	Zeichne den Regeln-Screen.
-*/
+/* Zeichne den Regeln-Screen. */
 static void Draw() {
 	Gui::clearTextBufs();
 	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
@@ -50,9 +48,7 @@ static void Draw() {
 	C3D_FrameEnd(0);
 }
 
-/*
-	Zeige den Regeln-Screen.
-*/
+/* Zeige den Regeln-Screen. */
 void Overlays::RulesOverlay() {
 	bool doOut = false;
 

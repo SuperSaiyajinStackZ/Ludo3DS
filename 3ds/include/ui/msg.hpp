@@ -30,11 +30,11 @@
 #include <string>
 
 namespace Msg {
-	bool promptMsg(std::string msg);
-	void DisplayWaitMsg(std::string waitMsg, ...);
+	bool promptMsg(const std::string &msg);
+	void DisplayWaitMsg(const std::string &waitMsg, ...);
 	void NotImplementedYet(void);
-	void DisplayMsg(std::string Message);
-	void HelperBox(std::string Msg);
+	void DisplayMsg(const std::string &Message);
+	void HelperBox(const std::string &Msg);
 };
 
 #endif

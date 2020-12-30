@@ -34,30 +34,30 @@ const std::vector<std::string> DESCS = { "FIGURE_AMOUNT_SCROLL", "PLAYER_AMOUNT_
 
 const std::vector<Structs::ButtonPos> Positions = {
 	/* Figuren. */
-	{ 120, 25, 40, 40 },
-	{ 165, 25, 40, 40 },
-	{ 210, 25, 40, 40 },
-	{ 255, 25, 40, 40 },
+	{ 120, 30, 40, 40 },
+	{ 165, 30, 40, 40 },
+	{ 210, 30, 40, 40 },
+	{ 255, 30, 40, 40 },
 
 	/* Spieler. */
-	{ 165, 95, 40, 40 },
-	{ 210, 95, 40, 40 },
-	{ 255, 95, 40, 40 },
+	{ 165, 100, 40, 40 },
+	{ 210, 100, 40, 40 },
+	{ 255, 100, 40, 40 },
 
 	/* Computer. */
-	{ 210, 165, 40, 40 },
-	{ 255, 165, 40, 40 },
+	{ 210, 170, 40, 40 },
+	{ 255, 170, 40, 40 },
 
 	/* Abbrechen und Weiter. */
 	{ 4, 216, 20, 20 },
 	{ 296, 216, 20, 20 },
 
 	/* Würfel-Rolls. */
-	{ 210, 25, 40, 40 },
-	{ 255, 25, 40, 40 }
+	{ 210, 30, 40, 40 },
+	{ 255, 30, 40, 40 }
 };
 
-static void DrawGameStart(const uint8_t selectedPlayer, const uint8_t selectedFigur, const bool useAI, const bool firstPage, const bool ThreeRolls, const int descScroll, const int desc, const int scrollAM, const uint8_t index, const bool allowCancel) {
+static void DrawGameSettings(const uint8_t selectedPlayer, const uint8_t selectedFigur, const bool useAI, const bool firstPage, const bool ThreeRolls, const int descScroll, const int desc, const int scrollAM, const uint8_t index, const bool allowCancel) {
 	Gui::clearTextBufs();
 	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 	C2D_TargetClear(Top, NO_COLOR);
@@ -71,36 +71,39 @@ static void DrawGameStart(const uint8_t selectedPlayer, const uint8_t selectedFi
 	GFX::DrawSprite(sprites_banner_idx, 72, 50);
 	Gui::ScreenDraw(Bottom);
 	GFX::DrawSet(set_bottom_bg_idx, 0, 0);
+	GFX::DrawSet(set_titlebar_idx, 0, 0);
 
 	/* Erste Seite. */
 	if (firstPage) {
-		Gui::DrawString(10, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT") + ": ", 105);
+		Gui::DrawStringCentered(0, 2, 0.6f, TEXT_COLOR, Lang::get("GENERAL_SETTINGS"), 310);
+		Gui::DrawString(14, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT") + ": ", 102);
 		GFX::DrawSet(set_figure_Amount_idx, Positions[0].x, Positions[0].y);
 		GFX::DrawSet(set_selector_idx, Positions[selectedFigur - 1].x, Positions[0].y);
 
-		Gui::DrawString(10, Positions[4].y + 13, 0.5f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT") + ": ", 105);
+		Gui::DrawString(14, Positions[4].y + 13, 0.5f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT") + ": ", 102);
 		GFX::DrawSet(set_player_Amount_idx, Positions[4].x, Positions[4].y);
 		GFX::DrawSet(set_selector_idx, Positions[4 + (selectedPlayer) - 2].x, Positions[4].y);
 
-		Gui::DrawString(10, Positions[7].y + 13, 0.5f, TEXT_COLOR, Lang::get("ENABLE_COMPUTER") + ": ", 105);
+		Gui::DrawString(14, Positions[7].y + 13, 0.5f, TEXT_COLOR, Lang::get("ENABLE_COMPUTER") + ": ", 102);
 		GFX::DrawSet(set_use_ai_idx, Positions[7].x, Positions[7].y);
 		GFX::DrawSet(set_selector_idx, Positions[(useAI ? 8 : 7)].x, Positions[7].y);
 
 	/* Zweite Seite. */
 	} else {
-		Gui::DrawString(10, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("DICE_ROLLS") + ": ", 105);
+		Gui::DrawStringCentered(0, 2, 0.6f, TEXT_COLOR, Lang::get("OPTIONAL_SETTINGS"), 310);
+		Gui::DrawString(14, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("DICE_ROLLS") + ": ", 102);
 		GFX::DrawSet(set_dice_rolls_idx, Positions[11].x, Positions[11].y);
 		GFX::DrawSet(set_selector_idx, Positions[(ThreeRolls ? 12 : 11)].x, Positions[(ThreeRolls ? 12 : 11)].y);
 	}
 
-	GFX::DrawSet(set_selected_idx, 4, 40 + (index * 70));
+	GFX::DrawSet(set_selected_idx, 6, 46 + (index * 70));
 	if (allowCancel) GFX::DrawSet(set_prev_idx, Positions[9].x, Positions[9].y);
 	GFX::DrawSet(set_next_idx, Positions[10].x, Positions[10].y);
 	C3D_FrameEnd(0);
 }
 
 /*
-	GameStart.. aber auch bekannt als "Spiel-Einstellungen".
+	Die Spiel-Einstellungen.
 
 	bool allowCancel: Ob die Selektion abgebrochen werden kann oder nicht.
 */
@@ -111,7 +114,7 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 	uint8_t index = 0;
 
 	while(1) {
-		DrawGameStart(dt.pAmount, dt.fAmount, dt.useAI, firstPage, dt.ThreeRolls, descScroll, desc, scrollAMT, index, allowCancel);
+		DrawGameSettings(dt.PAmount, dt.FAmount, dt.UseAI, firstPage, dt.ThreeRolls, descScroll, desc, scrollAMT, index, allowCancel);
 
 		touchPosition t;
 		hidScanInput();
@@ -164,17 +167,17 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				switch(index) {
 					/* Figuren Anzahl. */
 					case 0:
-						if (dt.fAmount > 1) dt.fAmount--;
+						if (dt.FAmount > 1) dt.FAmount--;
 						break;
 
 					case 1:
 						/* Spieler Anzahl. */
-						if (dt.pAmount > 2) dt.pAmount--;
+						if (dt.PAmount > 2) dt.PAmount--;
 						break;
 
 					case 2:
 						/* Computer. */
-						if (dt.useAI) dt.useAI = false;
+						if (dt.UseAI) dt.UseAI = false;
 						break;
 				}
 
@@ -193,17 +196,17 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				switch(index) {
 					/* Figuren Anzahl. */
 					case 0:
-						if (dt.fAmount < 4) dt.fAmount++;
+						if (dt.FAmount < 4) dt.FAmount++;
 						break;
 
 					case 1:
 						/* Spieler Anzahl. */
-						if (dt.pAmount < 4) dt.pAmount++;
+						if (dt.PAmount < 4) dt.PAmount++;
 						break;
 
 					case 2:
 						/* Computer. */
-						if (!dt.useAI) dt.useAI = true;
+						if (!dt.UseAI) dt.UseAI = true;
 						break;
 				}
 
@@ -217,6 +220,36 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 			}
 		}
 
+		if (hDown & KEY_A) {
+			if (firstPage) {
+				switch(index) {
+					/* Figuren Anzahl. */
+					case 0:
+						if (dt.FAmount < 4) dt.FAmount++;
+						else dt.FAmount = 1;
+						break;
+
+					case 1:
+						/* Spieler Anzahl. */
+						if (dt.PAmount < 4) dt.PAmount++;
+						else dt.PAmount = 2;
+						break;
+
+					case 2:
+						/* Computer. */
+						dt.UseAI = !dt.UseAI;
+						break;
+				}
+
+			} else {
+				switch(index) {
+					/* Würfel-Roll Anzahl. */
+					case 0:
+						dt.ThreeRolls = !dt.ThreeRolls;
+						break;
+				}
+			}
+		}
 
 		if (hDown & KEY_TOUCH) {
 			if (allowCancel) {
@@ -230,8 +263,9 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				/* Figuren Anzahl. */
 				for (uint8_t i = 0; i < 4; i++) {
 					if (touching(t, Positions[i])) {
-						dt.fAmount = i + 1;
+						dt.FAmount = i + 1;
 						didTouch = true;
+
 						index = 0;
 						desc = 0;
 						scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
@@ -244,8 +278,9 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					/* Spieler Anzahl. */
 					for (uint8_t i = 0; i < 3; i++) {
 						if (touching(t, Positions[4 + i])) {
-							dt.pAmount = i + 2;
+							dt.PAmount = i + 2;
 							didTouch = true;
+
 							index = 1;
 							desc = 1;
 							scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
@@ -259,7 +294,8 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					/* Computer. */
 					for (uint8_t i = 0; i < 2; i++) {
 						if (touching(t, Positions[7 + i])) {
-							dt.useAI = i;
+							dt.UseAI = i;
+
 							index = 2;
 							desc = 2;
 							scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
@@ -274,6 +310,7 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				for (uint8_t i = 0; i < 2; i++) {
 					if (touching(t, Positions[11 + i])) {
 						dt.ThreeRolls = i;
+
 						index = 0;
 						desc = 3;
 						scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));

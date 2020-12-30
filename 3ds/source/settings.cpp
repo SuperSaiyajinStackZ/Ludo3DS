@@ -29,9 +29,7 @@
 
 #define CONF_PATH "sdmc:/3ds/Ludo3DS/Config.json"
 
-/*
-	Falls die Konfigurations-Datei nicht existiert, erstelle sie und setze die Sprache auf Englisch.
-*/
+/* Falls die Konfigurations-Datei nicht existiert, erstelle sie und setze die Sprache auf Englisch. */
 void Settings::Initialize() {
 	FILE *file = fopen(CONF_PATH, "w");
 	this->SetInt("Language", 1);
@@ -42,11 +40,9 @@ void Settings::Initialize() {
 	fclose(file);
 }
 
-/*
-	Konfiguration Konstruktor.
-*/
+/* Konfiguration Konstruktor. */
 Settings::Settings() {
-	if (access(CONF_PATH, F_OK) != 0) this->Initialize();
+	if (access(CONF_PATH, F_OK) != 0) this->Initialize(); // Da die Konfiguration nicht existiert, erstelle sie.
 
 	FILE *file = fopen(CONF_PATH, "r");
 	this->config = nlohmann::json::parse(file, nullptr, false);
@@ -56,16 +52,14 @@ Settings::Settings() {
 	if (!this->config.contains("Language")) this->Language(1); // 1 ist Englisch, was die Standard Sprache ist.
 	else this->Language(this->GetInt("Language"));
 
-	/* Regeln anschauen. */
+	/* Regeln ansehen. */
 	if (!this->config.contains("ShowRules")) this->Rules(1); // 1 ist ja, also zeige Regeln an.
 	else this->Rules(this->GetInt("ShowRules"));
 
 	this->changesMade = false;
 }
 
-/*
-	Schreibe in die Konfiguration, falls Änderungen gemacht worden sind.
-*/
+/* Schreibe in die Konfiguration, falls Änderungen gemacht worden sind. */
 void Settings::Save() {
 	if (this->changesMade) {
 		FILE *file = fopen(CONF_PATH, "w");

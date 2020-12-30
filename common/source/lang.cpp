@@ -49,8 +49,7 @@ static std::string langs[] = { "de", "en" };
 	uint8_t lang: Der Sprachen-Index, welcher oben als string array angegeben ist.
 */
 void Lang::load(uint8_t lang) {
-	FILE *values;
-	values = fopen((LANG_PATH + langs[lang] + "/app.json").c_str(), "rt");
+	FILE *values = fopen((LANG_PATH + langs[lang] + "/app.json").c_str(), "rt");
 	if (values) appJson = nlohmann::json::parse(values, nullptr, false);
 	fclose(values);
 }

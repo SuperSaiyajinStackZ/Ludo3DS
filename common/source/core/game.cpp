@@ -66,9 +66,7 @@ void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRo
 	this->SaveConversion();
 }
 
-/*
-	Lade ein Spiel von Spiel-Daten.
-*/
+/* Lade ein Spiel von Spiel-Daten. */
 void Game::LoadGameFromFile() {
 	this->ValidGame = false; // Setze das immer zu falsch, wenn die Funktion startet.
 	if (access(_GAME_DATA_FILE, F_OK) != 0) return; // Datei existiert nicht.
@@ -77,7 +75,7 @@ void Game::LoadGameFromFile() {
 
 	if (in) {
 		fseek(in, 0, SEEK_END);
-		uint32_t size = ftell(in); // Teile uns die größe der Datei mit.
+		const uint32_t size = ftell(in); // Teile uns die größe der Datei mit.
 		fseek(in, 0, SEEK_SET);
 
 		if (size == _GAME_SIZE) {
@@ -91,9 +89,7 @@ void Game::LoadGameFromFile() {
 	}
 }
 
-/*
-	Konvertiere die Daten zu einem Spiel.
-*/
+/* Konvertiere die Daten zu einem Spiel. */
 void Game::convertDataToGame() {
 	if (this->GameData && this->ValidGame) {
 		/* Bereinige alles. */
@@ -106,7 +102,7 @@ void Game::convertDataToGame() {
 
 		/* Die Spieler-Anzahl. */
 		if ((this->GameData.get()[_GAME_PLAYER_AMOUNT] > MAX_FIGURES) || (this->GameData.get()[_GAME_PLAYER_AMOUNT] <= 1)) {
-			this->PlayerAmount = MAX_FIGURES; // Setze zu 4, weil 1- / 5+ verboten ist.
+			this->PlayerAmount = 2; // Setze zu 4, weil 1- / 5+ verboten ist.
 
 		} else {
 			this->PlayerAmount = this->GameData.get()[_GAME_PLAYER_AMOUNT];
@@ -114,7 +110,7 @@ void Game::convertDataToGame() {
 
 		/* Die Figuren-Anzahl. */
 		if ((this->GameData.get()[_GAME_FIGUR_AMOUNT] > MAX_FIGURES) || (this->GameData.get()[_GAME_FIGUR_AMOUNT] <= 0)) {
-			this->FigurAmount = MAX_FIGURES; // Setze zu 4, weil 0 / 5+ verboten ist.
+			this->FigurAmount = 1; // Setze zu 1, weil 0 / 5+ verboten ist.
 
 		} else {
 			this->FigurAmount = this->GameData.get()[_GAME_FIGUR_AMOUNT];
@@ -147,9 +143,7 @@ void Game::convertDataToGame() {
 }
 
 
-/*
-	Konvertiere das aktuelle Spiel zu einer Speicher-Datei.
-*/
+/* Konvertiere das aktuelle Spiel zu einer Spiel-Datei. */
 void Game::SaveConversion() {
 	if (!this->GameData) return; // Damit wir keine Probleme verursachen. Sollte jedoch nicht passieren.
 
@@ -200,9 +194,7 @@ void Game::SaveConversion() {
 	}
 }
 
-/*
-	Schreibe die Daten zu einer Datei.
-*/
+/* Schreibe die Daten zu einer Datei. */
 void Game::SaveToFile(bool update) {
 	if (update) this->SaveConversion(); // Konvertiere, falls update ist gewollt (true).
 
