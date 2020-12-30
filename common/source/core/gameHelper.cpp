@@ -444,3 +444,34 @@ bool GameHelper::CanKick(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 
 	return false;
 }
+
+/*
+	Dies ist dazu gedacht, um den Fortsetzungs-status zu setzen, falls man fortfahren kann.
+	Hauptsächlich für die Würfel-Züge.
+
+	std::unique_ptr<Game> &game: Eine Referenz zum aktuellen Spiel.
+	uint8_t player: Der aktuelle Spieler.
+*/
+void GameHelper::SetContinue(std::unique_ptr<Game> &game, uint8_t player) {
+	/* Sollte NICHT passieren, aber man weiss ja nie, LoL. */
+	if (game->GetAVLDiceRolls() == 0) {
+		game->SetCanContinue(false);
+		return;
+	}
+
+	game->SetAVLDiceRolls(game->GetAVLDiceRolls() - 1); // Reduziere um 1.
+
+	if (game->GetAVLDiceRolls() > 0) {
+		for (uint8_t fg = 0; fg < game->GetFigurAmount(); fg++) {
+			/* Überprüfe ob mindestens eine Figur außer Haus ist und noch nicht am Ziel ist. */
+			if (game->GetPosition(player, fg) > 0) {
+				if (!game->GetDone(player, fg)) {
+					game->SetCanContinue(false); // Da der aktuelle Spieler noch eine Figur draußen hat, die noch nicht am Ziel ist.
+					return;
+				}
+			}
+		}
+	}
+
+	game->SetCanContinue(game->GetAVLDiceRolls() > 0);
+}

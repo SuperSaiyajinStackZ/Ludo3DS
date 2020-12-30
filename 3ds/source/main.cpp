@@ -33,7 +33,7 @@ bool exiting = false;
 C2D_SpriteSheet sets, sprites;
 touchPosition touch;
 std::unique_ptr<Settings> konfiguration = nullptr;
-int fadeAlpha = 0;
+uint8_t fadeAlpha = 0;
 
 /*
 	Falls eine bestimmte position berührt wird.. mache etwas.

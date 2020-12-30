@@ -43,6 +43,8 @@ namespace GameHelper {
 	bool CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t figur, uint8_t ergebnis);
 	void AdditionalDoneCheck(std::unique_ptr<Game> &game, uint8_t player, uint8_t figur);
 	bool CanKick(std::unique_ptr<Game> &game, uint8_t player, uint8_t figur);
+
+	void SetContinue(std::unique_ptr<Game> &game, uint8_t player);
 };
 
 #endif

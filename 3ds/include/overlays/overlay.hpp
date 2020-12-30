@@ -36,6 +36,7 @@ struct GameData {
 	int8_t pAmount;
 	int8_t fAmount;
 	bool useAI;
+	bool ThreeRolls;
 };
 
 namespace Overlays {

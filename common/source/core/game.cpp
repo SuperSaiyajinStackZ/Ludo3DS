@@ -32,16 +32,18 @@
 
 	uint8_t playerAmount: Die Spieler-Anzahl.
 	uint8_t figurAmount: Die Figuren-Anzahl.
+	uint8_t diceRolls: Die Würfel-Roll Anzahl.
 */
-Game::Game(uint8_t playerAmount, uint8_t figurAmount) { this->InitNewGame(playerAmount, figurAmount); };
+Game::Game(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRolls) { this->InitNewGame(playerAmount, figurAmount, diceRolls); };
 
 /*
 	Initialisiere ein neues Spiel.
 
 	uint8_t playerAmount: Die Spieler-Anzahl.
 	uint8_t figurAmount: Die Figuren-Anzahl.
+	uint8_t diceRolls: Die Würfel-Roll Anzahl.
 */
-void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount) {
+void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRolls) {
 	/* Setze Spieler zurück. */
 	for (uint8_t i = 0; i < MAX_FIGURES; i++) {
 		this->Players[i] = nullptr;
@@ -53,6 +55,8 @@ void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount) {
 	this->CurrentPlayer = 0;
 	this->PlayerAmount = playerAmount;
 	this->FigurAmount = figurAmount;
+	this->DiceRolls = diceRolls;
+	this->AVLDiceRolls = this->DiceRolls;
 
 	for (uint8_t i = 0; i < playerAmount; i++) {
 		this->Players[i] = std::make_unique<Player>(figurAmount);
@@ -135,6 +139,10 @@ void Game::convertDataToGame() {
 
 			}
 		}
+
+		/* Würfel-Zeug. */
+		this->DiceRolls = this->GameData.get()[_GAME_DICE_ROLL];
+		this->AVLDiceRolls = this->GameData.get()[_GAME_AVL_DICE_ROLL];
 	}
 }
 
@@ -185,6 +193,10 @@ void Game::SaveConversion() {
 					(player * _GAME_PLAYER_SIZE)] = 0;
 			}
 		}
+
+		/* Würfel-Zeug. */
+		this->GameData.get()[_GAME_DICE_ROLL] = this->DiceRolls;
+		this->GameData.get()[_GAME_AVL_DICE_ROLL] = this->AVLDiceRolls;
 	}
 }
 

@@ -12,6 +12,10 @@ Ludo3DS wird ein Teil von [StackGames](https://github.com/SuperSaiyajinStackZ/St
 
 [3DElf](https://github.com/SuperSaiyajinStackZ/3DElf)'s code wurde als basis für dieses Spiel benutzt. Du kannst dies auch auschecken, falls du an einem `Elfer raus!` klon interessiert bist.
 
+## Spieldaten Struktur
+
+Du kannst informationen zur Spieldaten Struktur von Version 0.1.0 bis zur neusten [hier](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/GameDataStructure.md) finden!
+
 ## Screenshots
 
 Hier findest du ein paar Screenshots zum aktuellen Fortschritt.

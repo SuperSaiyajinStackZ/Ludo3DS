@@ -42,7 +42,9 @@
 #define _GAME_PLAYER_3			0x13 // 0x13 - 0x1A.
 #define _GAME_PLAYER_4			0x1B // 0x1B - 0x22.
 
-#define _GAME_SIZE				0x23 // 0x23 --> 35 byte.
+#define _GAME_DICE_ROLL			0x23
+#define _GAME_AVL_DICE_ROLL		0x24
+#define _GAME_SIZE				0x25 // 0x25 --> 37 byte.
 
 #define _GAME_DATA_FILE "sdmc:/3ds/Ludo3DS/GameData.dat"
 
@@ -53,25 +55,27 @@
 	0x1: Spieler-Anzahl.
 	0x2: Figuren-Anzahl.
 
-	- Eine Figur ist 0x3 groß. 0x0 ist die Position, während 0x1 beinhaltet, ob sie benutzt wird und 0x2 ob sie fertig ist.
+	- Eine Figur ist 0x2 groß. 0x0 ist die Position, während 0x1 beinhaltet, ob sie fertig ist.
 	- Ein Spieler besitzt 4 solcher Figuren, egal ob sie benutzt wird oder nicht.
 	- Es gibt 4 Spieler in der Spiel-Datei. Egal ob benutzt oder nicht.
 
-	0x3 - 0xE: Spieler 1.
-	0xF - 0x1A: Spieler 2.
-	0x1B - 0x26: Spieler 3.
-	0x27 - 0x32: Spieler 4.
+	0x3 - 0xA: Spieler 1.
+	0xB - 0x12: Spieler 2.
+	0x13 - 0x1A: Spieler 3.
+	0x1B - 0x22: Spieler 4.
+	0x23 - 0x23: Die Würfel-Roll Anzahl.
+	0x24 - 0x24: Die verbleibende Würfel-Roll Anzahl.
 
-	- Die Größe der Spiel-Datei ist 0x33, was 51 byte entspricht.
+	- Die Größe der Spiel-Datei ist 0x25, was 37 byte entspricht.
 */
 
 class Game {
 public:
-	Game(uint8_t playerAmount = 2, uint8_t figurAmount = 2);
+	Game(uint8_t playerAmount = 2, uint8_t figurAmount = 2, uint8_t diceRolls = 1);
 	~Game() { };
 
 	/* Spiel-Utilities. */
-	void InitNewGame(uint8_t playerAmount = 2, uint8_t figurAmount = 2);
+	void InitNewGame(uint8_t playerAmount = 2, uint8_t figurAmount = 2, uint8_t diceRolls = 1);
 	void LoadGameFromFile(); // Lade die Spiel-Daten von der Datei.
 	void convertDataToGame(); // Konvertiere die Spiel-Daten zu einem Spiel.
 	void SaveConversion(); // Konvertiere das aktuelle Spiel zu einem Buffer.
@@ -111,13 +115,22 @@ public:
 	/* Ausgewählte Figur part. */
 	uint8_t GetSelectedFigur() const { return this->SelectedFigur; };
 	void SetSelectedFigur(uint8_t v) { this->SelectedFigur = v; };
+
+	/* Würfel-Roll Anzahl. */
+	uint8_t GetDiceRolls() const { return this->DiceRolls; };
+	void SetDiceRolls(uint8_t rolls) { this->DiceRolls = rolls; };
+
+	/* Verbleibende Würfel-Roll Anzahl. */
+	uint8_t GetAVLDiceRolls() const { return this->AVLDiceRolls; };
+	void SetAVLDiceRolls(uint8_t rolls) { this->AVLDiceRolls = rolls; };
 private:
 	std::unique_ptr<Player> Players[4];
 
 	/*
 		Variablen für das Spiel.
 	*/
-	uint8_t CurrentPlayer = 0, FigurAmount = 1, PlayerAmount = 2, Ergebnis = 0, SelectedFigur = 0;
+	uint8_t CurrentPlayer = 0, FigurAmount = 1, PlayerAmount = 2, Ergebnis = 0,
+			SelectedFigur = 0, DiceRolls = 1, AVLDiceRolls = 0;
 	bool ValidGame = false, UseAI = false, CanContinue = false;
 
 	std::unique_ptr<uint8_t[]> GameData = nullptr; // Spiel-Daten Buffer.

@@ -27,7 +27,7 @@
 #include "gameHelper.hpp"
 #include "gameScreen.hpp"
 
-extern int fadeAlpha;
+extern uint8_t fadeAlpha;
 extern bool exiting;
 extern bool touching(touchPosition touch, Structs::ButtonPos button);
 
@@ -96,7 +96,7 @@ GameScreen::GameScreen() {
 	CoreHelper::GenerateSeed();
 
 	GameData dt = Overlays::PrepareGame();
-	this->currentGame = std::make_unique<Game>(dt.pAmount, dt.fAmount);
+	this->currentGame = std::make_unique<Game>(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
 	this->currentGame->SetAI(dt.useAI);
 }
 
@@ -172,6 +172,10 @@ void GameScreen::DisplaySub(void) const {
 	Gui::DrawStringCentered(0, 90, 0.6f, TEXT_COLOR, Lang::get("COMPUTER_ENABLED") +
 							(this->currentGame->GetAI() ? Lang::get("YES") : Lang::get("NO")), 390);
 
+	Gui::DrawStringCentered(0, 110, 0.6f, TEXT_COLOR, Lang::get("DICE_ROLLS") + ": " +
+							std::to_string(this->currentGame->GetDiceRolls()), 390);
+
+
 	Gui::DrawStringCentered(0, 160, 0.6f, TEXT_COLOR, Lang::get("SELECT_EXIT"), 390);
 	Gui::DrawStringCentered(0, 180, 0.6f, TEXT_COLOR, Lang::get("B_BACK"), 390);
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
@@ -195,7 +199,6 @@ void GameScreen::DisplaySub(void) const {
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
 
-
 /*
 	Der Haupt-Zeichnungs teil.
 */
@@ -215,7 +218,7 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 			if (dt.fAmount == -1) exiting = true; // -1 == Abgebrochen.
 
-			this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+			this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
 			this->currentGame->SetAI(dt.useAI);
 			this->gameOver = false;
 
@@ -290,7 +293,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 						if (dt.fAmount == -1) return; // -1 == Abgebrochen.
 
-						this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+						this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
 						this->currentGame->SetAI(dt.useAI);
 						this->isSub = false;
 					}
@@ -342,7 +345,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 				if (dt.fAmount == -1) return; // -1 == Abgebrochen.
 
-				this->currentGame->InitNewGame(dt.pAmount, dt.fAmount);
+				this->currentGame->InitNewGame(dt.pAmount, dt.fAmount, (dt.ThreeRolls ? 3 : 1));
 				this->currentGame->SetAI(dt.useAI);
 				this->isSub = false;
 			}
@@ -399,15 +402,14 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 			gspWaitForVBlank();
 
 			for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
-				if (GameHelper::CanMove(this->currentGame,
-					this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
-
+				if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
 					this->GetFirstAvlFigur();
 					this->awaitFigurSelect = true;
 					return;
 				}
 			}
 
+			GameHelper::SetContinue(this->currentGame, this->currentGame->GetCurrentPlayer());
 			this->NextPHandle();
 		}
 	}
@@ -544,44 +546,37 @@ bool GameScreen::Play() {
 	/* 0 --> Auf Feld 1, falls das Ergebnis eine 6 war, ansonsten ungültig. */
 	if (position == 0) {
 		if (this->currentGame->GetErgebnis() == 6) {
-			if (!GameHelper::DoesOwnFigurBlock(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1)) {
-
-					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1);
-					this->currentGame->SetCanContinue(true);
-					return true;
-
-				} else {
-					return false; // Die Eigene Figur blockt.
-				}
+			if (!GameHelper::DoesOwnFigurBlock(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1)) {
+				this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1);
+				this->currentGame->SetCanContinue(true);
+				return true;
 
 			} else {
-				return false; // Position 0 und keine 6 -> Ungültig!
+				return false; // Die Eigene Figur blockt.
 			}
 
-			/* Falls die Position nicht 0 ist. */
 		} else {
+			return false; // Position 0 und keine 6 -> Ungültig!
+		}
+
+		/* Falls die Position nicht 0 ist. */
+	} else {
 		if (position + this->currentGame->GetErgebnis() < 45) {
-			if (!GameHelper::DoesOwnFigurBlock(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), this->currentGame->GetErgebnis())) {
-					this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(),
-						position + this->currentGame->GetErgebnis());
+			if (!GameHelper::DoesOwnFigurBlock(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), this->currentGame->GetErgebnis())) {
+				this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), position + this->currentGame->GetErgebnis());
 
+				GameHelper::MarkAsDone(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 
-					GameHelper::MarkAsDone(this->currentGame,
-						this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
-
-
-					for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
-						GameHelper::AdditionalDoneCheck(this->currentGame, this->currentGame->GetCurrentPlayer(), i);
-					}
-
-					this->currentGame->SetCanContinue(this->currentGame->GetErgebnis() == 6);
-					return true;
-
-				} else {
-					return false; // Die Eigene Figur blockt.
+				for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
+					GameHelper::AdditionalDoneCheck(this->currentGame, this->currentGame->GetCurrentPlayer(), i);
 				}
+
+				this->currentGame->SetCanContinue(this->currentGame->GetErgebnis() == 6);
+				return true;
+
+			} else {
+				return false; // Die Eigene Figur blockt.
+			}
 
 		} else {
 			return false; // Größer als 44.
@@ -606,11 +601,12 @@ void GameScreen::NextPHandle() {
 
 	if (this->currentGame->GetCurrentPlayer() < this->currentGame->GetPlayerAmount() - 1) {
 		this->currentGame->SetCurrentPlayer(this->currentGame->GetCurrentPlayer() + 1);
-		return;
 
 	} else {
 		this->currentGame->SetCurrentPlayer(0);
 	}
+
+	this->currentGame->SetAVLDiceRolls(this->currentGame->GetDiceRolls()); // Setze standard Würfel-Rolls.
 }
 
 void GameScreen::AIHandle() {
@@ -620,9 +616,7 @@ void GameScreen::AIHandle() {
 	int8_t res = -1; // int8_t.. damit wir -1 benutzen können.
 
 	for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
-		if (GameHelper::CanMove(this->currentGame,
-			this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
-
+		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
 			/* Fokussiert aufs kicken. ;P */
 			if (GameHelper::CanKick(this->currentGame,
 				this->currentGame->GetCurrentPlayer(), figur)) {
@@ -684,6 +678,9 @@ void GameScreen::AIHandle() {
 
 		this->NextPHandle();
 		return;
+
+	} else {
+		GameHelper::SetContinue(this->currentGame, this->currentGame->GetCurrentPlayer());
 	}
 
 	this->NextPHandle();
