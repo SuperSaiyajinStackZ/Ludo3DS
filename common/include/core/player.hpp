@@ -1,6 +1,6 @@
 /*
 	Diese Datei ist Teil von Ludo3DS.
-	Copyright (C) 2020 bei SuperSaiyajinStackZ.
+	Copyright (C) 2020-2021 bei SuperSaiyajinStackZ.
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
