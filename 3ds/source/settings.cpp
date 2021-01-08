@@ -56,6 +56,10 @@ Settings::Settings() {
 	if (!this->config.contains("ShowRules")) this->Rules(1); // 1 ist ja, also zeige Regeln an.
 	else this->Rules(this->GetInt("ShowRules"));
 
+	/* Figur Animation. */
+	if (!this->config.contains("FigureAnim")) this->Animate(1); // 1 ist ja, also animiere die Figur.
+	else this->Animate(this->GetInt("FigureAnim"));
+
 	this->changesMade = false;
 }
 
@@ -65,6 +69,7 @@ void Settings::Save() {
 		FILE *file = fopen(CONF_PATH, "w");
 		this->SetInt("Language", this->Language());
 		this->SetInt("ShowRules", this->Rules());
+		this->SetInt("FigureAnim", this->Animate());
 
 		/* Scrhreibe Änderungen in die Konfigurations-Datei. */
 		const std::string dump = this->config.dump(1, '\t');

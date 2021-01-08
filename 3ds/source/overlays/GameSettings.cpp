@@ -30,7 +30,7 @@
 
 extern bool touching(touchPosition touch, Structs::ButtonPos pos);
 
-const std::vector<std::string> DESCS = { "FIGURE_AMOUNT_SCROLL", "PLAYER_AMOUNT_SCROLL", "ENABLE_COMPUTER_SCROLL", "DICE_ROLLS_SCROLL" };
+const std::vector<std::string> DESCS = { "FIGURE_AMOUNT_SCROLL", "PLAYER_AMOUNT_SCROLL", "ENABLE_COMPUTER_SCROLL", "DICE_ROLLS_SCROLL", "FIGURE_ANIMATE" };
 
 const std::vector<Structs::ButtonPos> Positions = {
 	/* Figuren. */
@@ -54,7 +54,11 @@ const std::vector<Structs::ButtonPos> Positions = {
 
 	/* Würfel-Rolls. */
 	{ 210, 30, 40, 40 },
-	{ 255, 30, 40, 40 }
+	{ 255, 30, 40, 40 },
+
+	/* Figuren Bewegung. */
+	{ 210, 100, 40, 40 },
+	{ 255, 100, 40, 40 },
 };
 
 static void DrawGameSettings(const uint8_t selectedPlayer, const uint8_t selectedFigur, const bool useAI, const bool firstPage, const bool ThreeRolls, const int descScroll, const int desc, const int scrollAM, const uint8_t index, const bool allowCancel) {
@@ -75,25 +79,34 @@ static void DrawGameSettings(const uint8_t selectedPlayer, const uint8_t selecte
 
 	/* Erste Seite. */
 	if (firstPage) {
+		/* Figuren Anzahl. */
 		Gui::DrawStringCentered(0, 2, 0.6f, TEXT_COLOR, Lang::get("GENERAL_SETTINGS"), 310);
 		Gui::DrawString(14, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("FIGURE_AMOUNT") + ": ", 102);
 		GFX::DrawSet(set_figure_Amount_idx, Positions[0].x, Positions[0].y);
 		GFX::DrawSet(set_selector_idx, Positions[selectedFigur - 1].x, Positions[0].y);
 
+		/* Spieler Anzahl. */
 		Gui::DrawString(14, Positions[4].y + 13, 0.5f, TEXT_COLOR, Lang::get("PLAYER_AMOUNT") + ": ", 102);
 		GFX::DrawSet(set_player_Amount_idx, Positions[4].x, Positions[4].y);
 		GFX::DrawSet(set_selector_idx, Positions[4 + (selectedPlayer) - 2].x, Positions[4].y);
 
+		/* Computer. */
 		Gui::DrawString(14, Positions[7].y + 13, 0.5f, TEXT_COLOR, Lang::get("ENABLE_COMPUTER") + ": ", 102);
 		GFX::DrawSet(set_use_ai_idx, Positions[7].x, Positions[7].y);
 		GFX::DrawSet(set_selector_idx, Positions[(useAI ? 8 : 7)].x, Positions[7].y);
 
 	/* Zweite Seite. */
 	} else {
+		/* Würfel Roll Anzahl falls alle spielbaren Figuren im Haus. */
 		Gui::DrawStringCentered(0, 2, 0.6f, TEXT_COLOR, Lang::get("OPTIONAL_SETTINGS"), 310);
 		Gui::DrawString(14, Positions[0].y + 13, 0.5f, TEXT_COLOR, Lang::get("DICE_ROLLS") + ": ", 102);
 		GFX::DrawSet(set_dice_rolls_idx, Positions[11].x, Positions[11].y);
 		GFX::DrawSet(set_selector_idx, Positions[(ThreeRolls ? 12 : 11)].x, Positions[(ThreeRolls ? 12 : 11)].y);
+
+		/* Figur Animation. */
+		Gui::DrawString(14, Positions[13].y + 13, 0.5f, TEXT_COLOR, Lang::get("ANIMATE_FIGURE") + ": ", 102);
+		GFX::DrawSet(set_use_ai_idx, Positions[13].x, Positions[13].y);
+		GFX::DrawSet(set_selector_idx, Positions[(konfiguration->Animate() ? 14 : 13)].x, Positions[(konfiguration->Animate() ? 14 : 13)].y);
 	}
 
 	GFX::DrawSet(set_selected_idx, 6, 46 + (index * 70));
@@ -148,6 +161,14 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
 					descScroll = 0;
 				}
+
+			} else {
+				if (index < 1) {
+					index++;
+					desc = 3 + index;
+					scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
+					descScroll = 0;
+				}
 			}
 		}
 
@@ -156,6 +177,14 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				if (index > 0) {
 					index--;
 					desc = index;
+					scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
+					descScroll = 0;
+				}
+
+			} else {
+				if (index > 0) {
+					index--;
+					desc = 3 + index;
 					scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
 					descScroll = 0;
 				}
@@ -187,6 +216,11 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					case 0:
 						if (dt.ThreeRolls) dt.ThreeRolls = false;
 						break;
+
+					/* Figuren Animation. */
+					case 1:
+						if (konfiguration->Animate()) konfiguration->Animate(false);
+						break;
 				}
 			}
 		}
@@ -215,6 +249,11 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					/* Würfel-Roll Anzahl. */
 					case 0:
 						if (!dt.ThreeRolls) dt.ThreeRolls = true;
+						break;
+
+					/* Figuren Animation. */
+					case 1:
+						if (!konfiguration->Animate()) konfiguration->Animate(true);
 						break;
 				}
 			}
@@ -246,6 +285,11 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 					/* Würfel-Roll Anzahl. */
 					case 0:
 						dt.ThreeRolls = !dt.ThreeRolls;
+						break;
+
+					/* Figuren Animation. */
+					case 1:
+						konfiguration->Animate(!konfiguration->Animate());
 						break;
 				}
 			}
@@ -306,9 +350,12 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 				}
 
 			} else {
+				bool didTouch = false;
+
 				/* Würfel-Roll Anzahl. */
 				for (uint8_t i = 0; i < 2; i++) {
 					if (touching(t, Positions[11 + i])) {
+						didTouch = true;
 						dt.ThreeRolls = i;
 
 						index = 0;
@@ -316,6 +363,21 @@ GameData Overlays::PrepareGame(bool allowCancel) {
 						scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
 						descScroll = 0;
 						break;
+					}
+				}
+
+				if (!didTouch) {
+					/* Figuren Animation. */
+					for (uint8_t i = 0; i < 3; i++) {
+						if (touching(t, Positions[13 + i])) {
+							konfiguration->Animate(i);
+
+							index = 1;
+							desc = 4;
+							scrollAMT = Gui::GetStringWidth(0.6f, Lang::get(DESCS[desc]));
+							descScroll = 0;
+							break;
+						}
 					}
 				}
 			}

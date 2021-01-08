@@ -34,6 +34,7 @@
 inline std::mt19937 randomGenerator; // Zufalls-Generator für den Würfel.
 #define MAX_FIELD 44 // 0 -> Haus, 1 - 40 -> Feld, 41 - 44 - Eingang.
 #define MAX_FIGURES 4 // 4 sind die maximale Anzahl an Figuren.
+#define MAX_PLAYERS 4 // Deklariere das ebenfalls.
 
 namespace CoreHelper {
 	void GenerateSeed();

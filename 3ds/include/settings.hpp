@@ -44,6 +44,10 @@ public:
 	/* Wiedergebe und Setze ob die Regeln angezeigt werden sollen. */
 	uint8_t Rules() const { return this->v_rules; };
 	void Rules(uint8_t v) { this->v_rules = v; if (!this->changesMade) this->changesMade = true; };
+
+	/* Wiedergebe und Setze ob die Figur bewegt werden soll oder nicht. */
+	uint8_t Animate() const { return this->v_animate; };
+	void Animate(uint8_t v) { this->v_animate = v; if (!this->changesMade) this->changesMade = true; };
 private:
 	int GetInt(const std::string &key) const;
 	void SetInt(const std::string &key, int v);
@@ -52,7 +56,7 @@ private:
 	bool changesMade = false;
 
 	/* Variablen für die Konfiguration. */
-	uint8_t v_language, v_rules;
+	uint8_t v_language, v_rules, v_animate;
 };
 
 #endif

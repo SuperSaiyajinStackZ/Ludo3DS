@@ -24,25 +24,18 @@
 		  reasonable ways as different from the original version.
 */
 
-#ifndef _LUDO3DS_FIGUR_HPP
-#define _LUDO3DS_FIGUR_HPP
+#ifndef _LUDO3DS_ANIM_HELPER_HPP
+#define _LUDO3DS_ANIM_HELPER_HPP
 
-#include "coreHelper.hpp"
+#include <string>
 
-class Figur {
-protected:
-	uint8_t Position; // Aktuelle Position.
-	bool Done; // Ob schon am Ziel.
-public:
-	Figur() : Position(0), Done(false) { };
+namespace AnimHelper {
+	std::pair<int8_t, int8_t> Player1Movement(uint8_t figur, uint8_t pos);
+	std::pair<int8_t, int8_t> Player2Movement(uint8_t figur, uint8_t pos);
+	std::pair<int8_t, int8_t> Player3Movement(uint8_t figur, uint8_t pos);
+	std::pair<int8_t, int8_t> Player4Movement(uint8_t figur, uint8_t pos);
 
-	uint8_t GetPosition() const { return this->Position; };
-	void SetPosition(uint8_t pos) {
-		if (pos <= MAX_FIELD) this->Position = pos; // 0 - 44 sind erlaubt, höher nicht.
-	};
-
-	bool GetDone() const { return this->Done; };
-	void SetDone(bool isDone) { this->Done = isDone; };
+	std::pair<int8_t, int8_t> PlayerMovement(uint8_t player, uint8_t figur, uint8_t pos);
 };
 
 #endif

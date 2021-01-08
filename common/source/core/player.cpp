@@ -37,7 +37,6 @@ Player::Player(uint8_t figurAmount) {
 	}
 }
 
-
 /*
 	Wiedergebe die Position einer Figur.
 
@@ -60,7 +59,6 @@ void Player::SetPosition(uint8_t figur, uint8_t position) {
 
 	this->Figuren[figur]->SetPosition(position);
 }
-
 
 /*
 	Wiedergebe ob eine Figur bereits am Ziel ist.

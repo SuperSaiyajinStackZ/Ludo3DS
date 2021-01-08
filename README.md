@@ -24,7 +24,7 @@ Hier findest du ein paar Screenshots zum aktuellen Fortschritt.
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/credits_en.png)
 
 ### Spiel Einstellungen
-![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/gameSettings_en.png)
+![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/gameSettings1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/gameSettings2_en.png)
 
 ### Spiel Screen
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions2_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/game_screen_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/sub_menu_en.png)

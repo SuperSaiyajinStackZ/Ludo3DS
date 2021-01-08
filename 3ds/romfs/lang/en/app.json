@@ -1,6 +1,7 @@
 {
 	"A_CONFIRM": "Press \uE000 to confirm.",
 	"A_CONTINUE": "Press \uE000 to continue.",
+	"ANIMATE_FIGURE": "Animate Figure",
 	"B_BACK": "Press \uE001 to go back to the game.",
 	"COMPUTER_ENABLED": "Computer enabled: ",
 	"CREDITS": "Credits",
@@ -15,6 +16,7 @@
 	"ENABLE_COMPUTER_SCROLL": "Set, if a computer should be used for the game.",
 	"FIGURE_AMOUNT": "Figure Amount",
 	"FIGURE_AMOUNT_SCROLL": "Set the amount of figures per player.",
+	"FIGURE_ANIMATE": "Set if the figure animation should be enabled or not.",
 	"GAME_INSTR_1": "Press \uE002 to roll the dice.\nPress START to show the sub menu.",
 	"GAME_INSTR_2": "Press \uE000 to select a figure.\nPress \uE052 | \uE053 | \uE07B | \uE07C to switch the figure.\nPress START to show the sub menu.",
 	"GAME_PAUSED": "Game paused.",

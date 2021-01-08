@@ -41,7 +41,7 @@ private:
 	/* Alle Zeichnungen. */
 	void DrawPlayers() const;
 	void DrawSelection(uint8_t selection) const;
-	void DrawPlayer(uint8_t player) const;
+	void DrawPlayer(uint8_t player, bool doesAnim = false) const;
 	void DisplaySub(void) const;
 	void DisplayGame(void) const;
 
@@ -59,10 +59,15 @@ private:
 	void AIHandle();
 	Structs::ButtonPos GetFigurTouchIndex(uint8_t player, uint8_t figur) const;
 
+	/* Animation. */
+	void FigurMovement(uint8_t player, uint8_t figur, uint8_t movement);
+
 	/* Variablen und so. */
 	std::unique_ptr<Game> currentGame = nullptr; // Der Spiel-Zeiger.
-	bool isSub = false, gameOver = false, awaitFigurSelect = false;
+	bool isSub = false, gameOver = false, awaitFigurSelect = false, shouldMove = false;
 	uint8_t subSel = 0;
+
+	uint16_t xPos = 0, yPos = 0; // Für die Animation.
 
 	/* Unter-Menü Button Positionen. */
 	const std::vector<Structs::ButtonPos> subBtn = {

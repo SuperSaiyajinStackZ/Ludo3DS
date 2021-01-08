@@ -24,6 +24,7 @@
 		  reasonable ways as different from the original version.
 */
 
+#include "animHelper.hpp"
 #include "gameHelper.hpp"
 #include "gameScreen.hpp"
 
@@ -35,9 +36,14 @@ extern bool touching(touchPosition touch, Structs::ButtonPos button);
 	Zeichne alle Figuren eines Spielers.
 
 	uint8_t player: Der Spieler-Index.
+	bool doesAnim: Ob die Figur animiert wird.
 */
-void GameScreen::DrawPlayer(uint8_t player) const {
+void GameScreen::DrawPlayer(uint8_t player, bool doesAnim) const {
 	for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
+		if (doesAnim) {
+			if (figur == this->currentGame->GetSelectedFigur()) continue;
+		}
+
 		const uint8_t position = this->currentGame->GetPosition(player, figur);
 
 		/* 0 --> Startfeld. */
@@ -91,7 +97,7 @@ void GameScreen::DrawSelection(uint8_t selection) const {
 GameScreen::GameScreen() {
 	CoreHelper::GenerateSeed();
 
-	GameData dt = Overlays::PrepareGame();
+	const GameData dt = Overlays::PrepareGame();
 	this->currentGame = std::make_unique<Game>(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
 	this->currentGame->SetAI(dt.UseAI);
 }
@@ -99,7 +105,13 @@ GameScreen::GameScreen() {
 /* Zeichne alle Figuren aller Spieler. */
 void GameScreen::DrawPlayers() const {
 	for (uint8_t i = 0; i < this->currentGame->GetPlayerAmount(); i++) {
-		this->DrawPlayer(i);
+		if (this->shouldMove) {
+			if (i == this->currentGame->GetCurrentPlayer()) this->DrawPlayer(i, true);
+			else this->DrawPlayer(i, false);
+
+		} else {
+			this->DrawPlayer(i, false);
+		}
 	}
 }
 
@@ -131,11 +143,6 @@ void GameScreen::DisplayGame(void) const {
 	this->DrawPlayers();
 
 	if (this->awaitFigurSelect) this->DrawSelection(this->currentGame->GetSelectedFigur());
-	else {
-		for (uint8_t i = 0; i < this->currentGame->GetFigurAmount(); i++) {
-			this->DrawSelection(i);
-		}
-	}
 
 	if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 }
@@ -279,6 +286,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 						this->currentGame->InitNewGame(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
 						this->currentGame->SetAI(dt.UseAI);
+						this->awaitFigurSelect = false;
 						this->isSub = false;
 					}
 				}
@@ -331,6 +339,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 				this->currentGame->InitNewGame(dt.PAmount, dt.FAmount, (dt.ThreeRolls ? 3 : 1));
 				this->currentGame->SetAI(dt.UseAI);
+				this->awaitFigurSelect = false;
 				this->isSub = false;
 			}
 
@@ -488,7 +497,10 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 
 	if (hDown & KEY_A) {
 		const bool canCont = this->Play();
-		if (canCont) this->awaitFigurSelect = false; // Weil wir spielen konnten, erwarten wir keine Figur Selektion.
+
+		if (canCont) {
+			this->awaitFigurSelect = false; // Weil wir spielen konnten, erwarten wir keine Figur Selektion.
+		}
 
 		if (canCont) {
 			/* Führe die Kick Aktion aus. */
@@ -521,6 +533,8 @@ bool GameScreen::Play() {
 	if (position == 0) {
 		if (this->currentGame->GetErgebnis() == 6) {
 			if (!GameHelper::DoesOwnFigurBlock(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1)) {
+				FigurMovement(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1);
+
 				this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), 1);
 				this->currentGame->SetCanContinue(true);
 				return true;
@@ -537,6 +551,8 @@ bool GameScreen::Play() {
 	} else {
 		if (position + this->currentGame->GetErgebnis() < 45) {
 			if (!GameHelper::DoesOwnFigurBlock(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), this->currentGame->GetErgebnis())) {
+				FigurMovement(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), this->currentGame->GetErgebnis());
+
 				this->currentGame->SetPosition(this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur(), position + this->currentGame->GetErgebnis());
 
 				GameHelper::MarkAsDone(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
@@ -590,9 +606,7 @@ void GameScreen::AIHandle() {
 	for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
 			/* Fokussiert aufs kicken. ;P */
-			if (GameHelper::CanKick(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), figur)) {
-
+			if (GameHelper::CanKick(this->currentGame, this->currentGame->GetCurrentPlayer(), figur)) {
 				this->currentGame->SetSelectedFigur(figur);
 				canMove = true;
 				break;
@@ -626,7 +640,7 @@ void GameScreen::AIHandle() {
 
 	if (!canMove) {
 		if (res != -1) {
-			this->currentGame->SetSelectedFigur(res);
+			this->GetFirstAvlFigur();
 			canMove = true;
 		}
 	}
@@ -656,4 +670,81 @@ void GameScreen::AIHandle() {
 	}
 
 	this->NextPHandle();
+}
+
+
+
+/*
+	||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+					ANIMATION!!!
+	||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+*/
+
+#define _ANIM_DELAY 10 // Animations-Verzögerung der Figur. TODO: Finde eine gute Verzögerung.
+
+/*
+	Bewegt eine Figur.
+
+	uint8_t player: Der Spieler.
+	uint8_t figur: Die Figur.
+	uint8_t movement: Die Anzahl der Felder.
+*/
+void GameScreen::FigurMovement(uint8_t player, uint8_t figur, uint8_t movement) {
+	if (!konfiguration->Animate()) return;
+
+	this->shouldMove = true;
+	uint8_t toMove = movement; // Die Anzahl der Bewegungen.
+
+	/* Als erstes: Fetche die Position. */
+	const uint8_t pos = this->currentGame->GetPosition(player, figur);
+
+	/* 0 --> Startfeld. */
+	if (pos == 0) {
+		this->xPos = this->PlayerField[(player * 4) + figur].x;
+		this->yPos = this->PlayerField[(player * 4) + figur].y;
+
+	} else if (pos > 0 && pos < 41) {
+		this->xPos = this->MainField[GameHelper::PositionConvert(player, pos) - 1].x;
+		this->yPos = this->MainField[GameHelper::PositionConvert(player, pos) - 1].y;
+
+	/* Falls wir in den Eingangs-Bereich kommen. */
+	} else if (pos > 40) {
+		this->xPos = this->EingangField[(player * 4) + (pos - 41)].x;
+		this->yPos = this->EingangField[(player * 4) + (pos - 41)].y;
+	}
+
+	/* Jetzt beginnt die eigentliche Logik. */
+	uint8_t MovedPositions = 0;
+	while(toMove > 0) {
+		const std::pair<int8_t, int8_t> PosMove = AnimHelper::PlayerMovement(player, figur, pos + MovedPositions);
+
+		/* Der Zeichen Teil. */
+		Gui::clearTextBufs();
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+		C2D_TargetClear(Top, NO_COLOR);
+		C2D_TargetClear(Bottom, NO_COLOR);
+		GFX::DrawBaseTop();
+		Gui::Draw_Rect(0, 0, 400, 25, BAR_COLOR);
+		Gui::Draw_Rect(0, 215, 400, 25, BAR_COLOR);
+		GFX::Dice(toMove, 160, 80);
+		if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 400, 240, C2D_Color32(0, 0, 0, fadeAlpha));
+
+		Gui::ScreenDraw(Bottom);
+		GFX::DrawSet(set_bottom_bg_idx, 0, 0);
+		GFX::DrawField();
+		this->DrawPlayers();
+		GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), this->xPos, this->yPos);
+
+		if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
+		C3D_FrameEnd(0);
+
+		for (int i = 0; i < _ANIM_DELAY; i++) { gspWaitForVBlank(); };
+
+		this->xPos += PosMove.first;
+		this->yPos += PosMove.second;
+		MovedPositions++;
+		toMove--;
+	};
+
+	this->shouldMove = false;
 }

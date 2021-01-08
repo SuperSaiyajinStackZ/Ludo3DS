@@ -88,10 +88,10 @@ int main() {
 		if (exiting) {
 			if (hDown & KEY_START) fullExit = true;
 
-			if (fadeAlpha < 255) {
+			if (fadeAlpha < 254) {
 				fadeAlpha += 2;
 
-				if (fadeAlpha >= 255) fullExit = true;
+				if (fadeAlpha >= 254) fullExit = true;
 			}
 		}
 	}

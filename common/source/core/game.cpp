@@ -45,11 +45,11 @@ Game::Game(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRolls) { this-
 */
 void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRolls) {
 	/* Setze Spieler zurück. */
-	for (uint8_t i = 0; i < MAX_FIGURES; i++) {
+	for (uint8_t i = 0; i < MAX_PLAYERS; i++) {
 		this->Players[i] = nullptr;
 	}
 
-	if ((playerAmount > MAX_FIGURES) || (playerAmount <= 1)) playerAmount = 2; // 0, 1 und 5+ sind zu wenig / viel und werden als 2 gesetzt.
+	if ((playerAmount > MAX_PLAYERS) || (playerAmount <= 1)) playerAmount = 2; // 0, 1 und 5+ sind zu wenig / viel und werden als 2 gesetzt.
 	if ((figurAmount > MAX_FIGURES) || (figurAmount <= 0)) figurAmount = 1; // 0 und 5+ sind zu wenig/ viel und werden als 1 gesetzt.
 
 	this->CurrentPlayer = 0;
@@ -93,10 +93,7 @@ void Game::LoadGameFromFile() {
 void Game::convertDataToGame() {
 	if (this->GameData && this->ValidGame) {
 		/* Bereinige alles. */
-		for (uint8_t i = 0; i < MAX_FIGURES; i++) {
-			this->Players[i] = nullptr;
-		}
-
+		for (uint8_t i = 0; i < MAX_PLAYERS; i++) this->Players[i] = nullptr;
 
 		this->CurrentPlayer = this->GameData.get()[_GAME_CURRENT_PLAYER]; // Der Aktuelle Spieler.
 
@@ -124,7 +121,6 @@ void Game::convertDataToGame() {
 		/* Der Spieler Teil. */
 		for (uint8_t player = 0; player < this->PlayerAmount; player++) {
 			for (uint8_t figur = 0; figur < this->FigurAmount; figur++) {
-
 				/* Position. */
 				this->Players[player]->SetPosition(figur, this->GameData[_GAME_PLAYER_1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)]);
@@ -132,7 +128,6 @@ void Game::convertDataToGame() {
 				/* Ziel. */
 				this->Players[player]->SetDone(figur, this->GameData[_GAME_PLAYER_1 + 1 + (figur * _GAME_FIGUR_SIZE) +
 						(player * _GAME_PLAYER_SIZE)]);
-
 			}
 		}
 
@@ -141,7 +136,6 @@ void Game::convertDataToGame() {
 		this->AVLDiceRolls = this->GameData.get()[_GAME_AVL_DICE_ROLL];
 	}
 }
-
 
 /* Konvertiere das aktuelle Spiel zu einer Spiel-Datei. */
 void Game::SaveConversion() {
@@ -152,7 +146,7 @@ void Game::SaveConversion() {
 	this->GameData[_GAME_FIGUR_AMOUNT] = this->FigurAmount;
 
 	/* Der Spieler Teil. */
-	for (uint8_t player = 0; player < MAX_FIGURES; player++) {
+	for (uint8_t player = 0; player < MAX_PLAYERS; player++) {
 		if (player < this->PlayerAmount) {
 
 			for (uint8_t figur = 0; figur < MAX_FIGURES; figur++) {
