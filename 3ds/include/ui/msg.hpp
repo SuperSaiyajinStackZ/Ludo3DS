@@ -30,7 +30,7 @@
 #include <string>
 
 namespace Msg {
-	bool promptMsg(const std::string &msg);
+	bool promptMsg(const std::string &msg = "", const uint8_t p = 0);
 	void DisplayWaitMsg(const std::string &waitMsg, ...);
 	void NotImplementedYet(void);
 	void DisplayMsg(const std::string &Message);

@@ -50,12 +50,12 @@ static void Draw() {
 	Gui::Draw_Rect(0, 0, 320, 25, BAR_COLOR);
 	Gui::Draw_Rect(0, 215, 320, 25, BAR_COLOR);
 
-	Gui::DrawStringCentered(0, 28, 0.6f, TEXT_COLOR, "devkitPro", 310, 0);
-	Gui::DrawStringCentered(0, 48, 0.5f, TEXT_COLOR, Lang::get("DEVKITPRO"), 310, 0);
-	Gui::DrawStringCentered(0, 78, 0.6f, TEXT_COLOR, "SuperSaiyajinStackZ", 310, 0);
-	Gui::DrawStringCentered(0, 98, 0.5f, TEXT_COLOR, Lang::get("DEVELOPING_APP"), 310, 0);
-	Gui::DrawStringCentered(0, 128, 0.6f, TEXT_COLOR, "Universal-Team", 310, 0);
-	Gui::DrawStringCentered(0, 148, 0.5f, TEXT_COLOR, Lang::get("UNIVERSAL_CORE"), 310, 0);
+	Gui::DrawStringCentered(0, 48, 0.6f, TEXT_COLOR, "devkitPro", 310, 0);
+	Gui::DrawStringCentered(0, 68, 0.5f, TEXT_COLOR, Lang::get("DEVKITPRO"), 310, 0);
+	Gui::DrawStringCentered(0, 98, 0.6f, TEXT_COLOR, "SuperSaiyajinStackZ", 310, 0);
+	Gui::DrawStringCentered(0, 118, 0.5f, TEXT_COLOR, Lang::get("DEVELOPING_APP"), 310, 0);
+	Gui::DrawStringCentered(0, 148, 0.6f, TEXT_COLOR, "Universal-Team", 310, 0);
+	Gui::DrawStringCentered(0, 168, 0.5f, TEXT_COLOR, Lang::get("UNIVERSAL_CORE"), 310, 0);
 	C3D_FrameEnd(0);
 }
 

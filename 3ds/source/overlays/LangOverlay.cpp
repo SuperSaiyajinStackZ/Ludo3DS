@@ -75,7 +75,7 @@ static void Draw(const uint8_t sltLang) {
 
 /* Zeige das Sprach-Auswahl Overlay. */
 void Overlays::LanguageOverlay() {
-	uint8_t selectedLang = 0;
+	uint8_t selectedLang = konfiguration->Language();
 	bool doOut = false;
 
 	while(!doOut) {

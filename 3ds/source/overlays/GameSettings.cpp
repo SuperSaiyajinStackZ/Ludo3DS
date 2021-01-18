@@ -58,7 +58,7 @@ const std::vector<Structs::ButtonPos> Positions = {
 
 	/* Figuren Bewegung. */
 	{ 210, 100, 40, 40 },
-	{ 255, 100, 40, 40 },
+	{ 255, 100, 40, 40 }
 };
 
 static void DrawGameSettings(const uint8_t selectedPlayer, const uint8_t selectedFigur, const bool useAI, const bool firstPage, const bool ThreeRolls, const int descScroll, const int desc, const int scrollAM, const uint8_t index, const bool allowCancel) {

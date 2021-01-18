@@ -30,7 +30,7 @@ Hier findest du ein paar Screenshots zum aktuellen Fortschritt.
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions2_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/game_screen_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/sub_menu_en.png)
 
 ### Splash Overlay
-![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/splash_en.png)
+![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/splash_new.png)
 
 ### Sprachauswahl Overlay
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/language_overlay_en.png)
@@ -41,7 +41,7 @@ Hier findest du ein paar Screenshots zum aktuellen Fortschritt.
 ## Kompilieren
 ### Die Umgebung aufsetzen
 
-Um Ludo3DS vom quellcode zu kompilieren, musst du deine Umgebung mit devkitARM, Libctru, Citro2D und Citro3D aufsetzen. Folge devkitPro's [Getting Started](https://devkitpro.org/wiki/Getting_Started) Seite um pacman zu installieren, dann führe `(sudo dkp-)pacman -S 3ds-dev` aus. Du wirst ebenfalls [bannertool](https://github.com/Steveice10/bannertool/releases/latest) und [makerom](https://github.com/profi200/Project_CTR/releases/latest) im `3ds` Ordner benötigen.
+Um Ludo3DS vom quellcode zu kompilieren, musst du deine Umgebung mit devkitARM, Libctru, Citro2D und Citro3D aufsetzen. Folge devkitPro's [Getting Started](https://devkitpro.org/wiki/Getting_Started) Seite um pacman zu installieren, dann führe `(sudo dkp-)pacman -S 3ds-dev` aus. Du wirst ebenfalls [bannertool](https://github.com/Steveice10/bannertool/releases/latest) und [makerom](https://github.com/profi200/Project_CTR/releases/latest) im Pfad benötigen.
 
 ### Klonen der Repository
 

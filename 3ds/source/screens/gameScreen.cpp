@@ -141,6 +141,7 @@ void GameScreen::DisplayGame(void) const {
 	GFX::DrawSet(set_bottom_bg_idx, 0, 0);
 	GFX::DrawField();
 	this->DrawPlayers();
+	GFX::DrawSet(set_dieIcon_idx, this->subBtn[5].x, this->subBtn[5].y);
 
 	if (this->awaitFigurSelect) this->DrawSelection(this->currentGame->GetSelectedFigur());
 
@@ -170,6 +171,11 @@ void GameScreen::DisplaySub(void) const {
 	Gui::DrawStringCentered(0, 110, 0.6f, TEXT_COLOR, Lang::get("DICE_ROLLS") + ": " +
 							std::to_string(this->currentGame->GetDiceRolls()), 390);
 
+	Gui::DrawStringCentered(0, 130, 0.6f, TEXT_COLOR, Lang::get("DICE_ROLLS_ACTIVE") +
+							std::to_string(this->currentGame->GetAVLDiceRolls()), 390);
+
+
+
 
 	Gui::DrawStringCentered(0, 160, 0.6f, TEXT_COLOR, Lang::get("SELECT_EXIT"), 390);
 	Gui::DrawStringCentered(0, 180, 0.6f, TEXT_COLOR, Lang::get("B_BACK"), 390);
@@ -181,7 +187,12 @@ void GameScreen::DisplaySub(void) const {
 	/* Zeige Schaltflächen. */
 	for (int i = 0; i < 5; i++) {
 		GFX::DrawSet(set_button_idx, this->subBtn[i].x, this->subBtn[i].y);
-		if (this->subSel == i) GFX::DrawSet(set_button_selector_idx, this->subBtn[i].x, this->subBtn[i].y);
+
+		/* Zeichne die Chips als Selektoren, das ist viel besser als der alte Selektor! */
+		if (this->subSel == i) {
+			GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), 64, this->subBtn[i].y + 8);
+			GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), 238, this->subBtn[i].y + 8);
+		}
 	}
 
 	/* Schaltflächen Texte. */
@@ -204,7 +215,7 @@ void GameScreen::Draw(void) const {
 void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 	/* Falls das Spiel vorbei ist. */
 	if (this->gameOver) {
-		if (Msg::promptMsg(Lang::get("NEXT_GAME"))) {
+		if (Msg::promptMsg(Lang::get("NEXT_GAME"), this->currentGame->GetCurrentPlayer())) {
 			const GameData dt = Overlays::PrepareGame(true);
 
 			if (dt.FAmount == -1) exiting = true; // -1 == Abgebrochen.
@@ -226,12 +237,8 @@ void GameScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 			this->SubLogic(hDown, hHeld, touch);
 
 		} else {
-			if (!this->awaitFigurSelect) {
-				this->RoundLogic(hDown, hHeld);
-
-			} else {
-				this->FigureSelection(hDown, hHeld, touch);
-			}
+			if (!this->awaitFigurSelect) this->RoundLogic(hDown, hHeld, touch);
+			else this->FigureSelection(hDown, hHeld, touch);
 		}
 	}
 }
@@ -252,7 +259,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 		switch(this->subSel) {
 			case 0:
 				/* Spiel Laden. */
-				if (Msg::promptMsg(Lang::get("LOAD_FROM_FILE_PROMPT"))) {
+				if (Msg::promptMsg(Lang::get("LOAD_FROM_FILE_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 					this->currentGame->LoadGameFromFile();
 					if (this->currentGame->validLoaded()) {
 						Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
@@ -269,7 +276,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 			case 1:
 				/* Spiel Speichern. */
-				if (Msg::promptMsg(Lang::get("SAVE_TO_FILE_PROMPT"))) {
+				if (Msg::promptMsg(Lang::get("SAVE_TO_FILE_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 					Msg::DisplayMsg(Lang::get("SAVING_GAME"));
 					this->currentGame->SaveToFile(true);
 					Msg::DisplayWaitMsg(Lang::get("SAVED_TO_FILE"));
@@ -279,7 +286,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 			case 2: {
 					/* Spiel Einstellungen. */
-					if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
+					if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 						const GameData dt = Overlays::PrepareGame(true);
 
 						if (dt.FAmount == -1) return; // -1 == Abgebrochen.
@@ -307,7 +314,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (hDown & KEY_TOUCH) {
 		/* Spiel Laden. */
 		if (touching(touch, this->subBtn[0])) {
-			if (Msg::promptMsg(Lang::get("LOAD_FROM_FILE_PROMPT"))) {
+			if (Msg::promptMsg(Lang::get("LOAD_FROM_FILE_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 				this->currentGame->LoadGameFromFile();
 				if (this->currentGame->validLoaded()) {
 					Msg::DisplayMsg(Lang::get("PREPARE_GAME"));
@@ -323,7 +330,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 		/* Spiel Speichern. */
 		} else if (touching(touch, this->subBtn[1])) {
-			if (Msg::promptMsg(Lang::get("SAVE_TO_FILE_PROMPT"))) {
+			if (Msg::promptMsg(Lang::get("SAVE_TO_FILE_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 				Msg::DisplayMsg(Lang::get("SAVING_GAME"));
 				this->currentGame->SaveToFile(true);
 				Msg::DisplayWaitMsg(Lang::get("SAVED_TO_FILE"));
@@ -332,7 +339,7 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 		/* Spiel Einstellungen. */
 		} else if (touching(touch, this->subBtn[2])) {
-			if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"))) {
+			if (Msg::promptMsg(Lang::get("GAME_SETTINGS_PROMPT"), this->currentGame->GetCurrentPlayer())) {
 				const GameData dt = Overlays::PrepareGame(true);
 
 				if (dt.FAmount == -1) return; // -1 == Abgebrochen.
@@ -359,14 +366,14 @@ void GameScreen::SubLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 
 	Rolle den Würfel.
 */
-void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
+void GameScreen::RoundLogic(u32 hDown, u32 hHeld, touchPosition touch) {
 	if (this->currentGame->GetAI() && this->currentGame->GetCurrentPlayer() != 0) {
 		this->AIHandle();
 
 	} else {
 		if (hHeld & KEY_SELECT) Msg::HelperBox(Lang::get("GAME_INSTR_1"));
 
-		if (hDown & KEY_X) {
+		if ((hDown & KEY_X) || (hDown & KEY_TOUCH && touching(touch, this->subBtn[5]))) {
 			this->currentGame->SetErgebnis(Overlays::RollDiceOverlay()); // Würfeln!
 
 			bool confirmation = false;
@@ -389,10 +396,9 @@ void GameScreen::RoundLogic(u32 hDown, u32 hHeld) {
 				C3D_FrameEnd(0);
 
 				hidScanInput();
-				if (hidKeysDown() & KEY_A) confirmation = true;
+				if ((hidKeysDown() & KEY_A) || (hidKeysDown() & KEY_TOUCH)) confirmation = true;
+				gspWaitForVBlank();
 			}
-
-			gspWaitForVBlank();
 
 			for (uint8_t figur = 0; figur < this->currentGame->GetFigurAmount(); figur++) {
 				if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), figur, this->currentGame->GetErgebnis())) {
@@ -424,7 +430,7 @@ void GameScreen::NextFigur() {
 void GameScreen::PreviousFigur() {
 	if (this->currentGame->GetSelectedFigur() == 0) return; // Es gibt kein -1.
 
-	for (uint8_t cFigur = this->currentGame->GetSelectedFigur() - 1; cFigur >= 0; cFigur--) {
+	for (int8_t cFigur = this->currentGame->GetSelectedFigur() - 1; cFigur >= 0; cFigur--) {
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
 			this->currentGame->SetSelectedFigur(cFigur);
 			break;
@@ -504,8 +510,7 @@ void GameScreen::FigureSelection(u32 hDown, u32 hHeld, touchPosition touch) {
 
 		if (canCont) {
 			/* Führe die Kick Aktion aus. */
-			GameHelper::KickAction(this->currentGame,
-				this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
+			GameHelper::KickAction(this->currentGame, this->currentGame->GetCurrentPlayer(), this->currentGame->GetSelectedFigur());
 		}
 
 		if (GameHelper::HasFinished(this->currentGame, this->currentGame->GetCurrentPlayer())) {
@@ -635,7 +640,8 @@ void GameScreen::AIHandle() {
 		C3D_FrameEnd(0);
 
 		hidScanInput();
-		if (hidKeysDown() & KEY_A) confirmation = true;
+		if ((hidKeysDown() & KEY_A) || (hidKeysDown() & KEY_TOUCH)) confirmation = true;
+		gspWaitForVBlank();
 	}
 
 	if (!canMove) {
