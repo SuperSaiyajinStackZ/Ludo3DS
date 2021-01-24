@@ -27,10 +27,10 @@ Hier findest du ein paar Screenshots zum aktuellen Fortschritt.
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/gameSettings1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/gameSettings2_en.png)
 
 ### Spiel Screen
-![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions2_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/game_screen_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/sub_menu_en.png)
+![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/game_screen_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/sub_menu_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions1_en.png) ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/instructions2_en.png)
 
 ### Splash Overlay
-![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/splash_new.png)
+![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/splash.png)
 
 ### Sprachauswahl Overlay
 ![](https://github.com/SuperSaiyajinStackZ/Ludo3DS/blob/main/screenshots/language_overlay_en.png)
