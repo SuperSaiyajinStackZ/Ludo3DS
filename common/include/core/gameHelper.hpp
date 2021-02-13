@@ -31,7 +31,7 @@
 #include "game.hpp"
 
 namespace GameHelper {
-	uint8_t PositionConvert(uint8_t Player, uint8_t Position);
+	uint8_t PositionConvert(uint8_t Index, uint8_t Position);
 
 	bool HasFinished(std::unique_ptr<Game> &game, uint8_t player);
 	bool DoesOwnFigurBlock(std::unique_ptr<Game> &game, uint8_t player, uint8_t figur, uint8_t ergebnis);

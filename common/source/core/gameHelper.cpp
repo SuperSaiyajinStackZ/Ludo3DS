@@ -29,14 +29,14 @@
 /*
 	Konvertiere die Position eines Spielers zu der Haupt-Perspektive.
 
-	uint8_t Player: Der Spieler-Index. ( 0 - 3 ).
+	uint8_t Index: Der Spiel-Index. ( 0 - 3 ).
 	uint8_t Position: Die Position.
 */
-uint8_t GameHelper::PositionConvert(uint8_t Player, uint8_t Position) {
+uint8_t GameHelper::PositionConvert(uint8_t Index, uint8_t Position) {
 	if (Position == 0) return 0; // 0.. ist immer 0.
 	if (Position > 40) return Position; // Über 40.. ist immer über 40.
 
-	switch(Player) {
+	switch(Index) {
 		case 0:
 			return Position; // Wir haben die Haupt-Position von der Spieler 1 Perspektive.
 
@@ -83,12 +83,12 @@ bool GameHelper::HasFinished(std::unique_ptr<Game> &game, uint8_t player) {
 bool GameHelper::DoesOwnFigurBlock(std::unique_ptr<Game> &game, uint8_t player, uint8_t figur, uint8_t ergebnis) {
 	if (!game) return true; // Spiel-Zeiger ist nicht gültig.
 
-	const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur) + ergebnis);
+	const uint8_t Position = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur) + ergebnis);
 
 	/* Überprüfe für alle Figuren eines Spielers. */
 	for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
 		if (figur2 != figur) {
-			const uint8_t Position2 = GameHelper::PositionConvert(player, game->GetPosition(player, figur2));
+			const uint8_t Position2 = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur2));
 
 			if (Position == Position2) return true; // Position passt zu Position2 -> Blockiert!
 		}
@@ -128,12 +128,12 @@ void GameHelper::KickAction(std::unique_ptr<Game> &game, uint8_t player, uint8_t
 	if (test == 0 || test > 40) return; // 0 und 40 + können nicht gekickt werden.
 
 
-	const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur));
+	const uint8_t Position = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur));
 
 	for (uint8_t player2 = 0; player2 < game->GetPlayerAmount(); player2++) {
 		if (player2 != player) {
 			for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
-				const uint8_t Position2 = GameHelper::PositionConvert(player2,
+				const uint8_t Position2 = GameHelper::PositionConvert(game->GetIndex(player2),
 											game->GetPosition(player2, figur2));
 
 				if (Position2 < 41) {
@@ -271,12 +271,12 @@ bool GameHelper::CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 	/* Überprüfe vom Haus. */
 	if (game->GetPosition(player, figur) == 0) {
 		if (ergebnis == 6) {
-			const uint8_t TempPos = GameHelper::PositionConvert(player, game->GetPosition(player, figur) + 1);
+			const uint8_t TempPos = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur) + 1);
 
 			/* Überprüfe für alle Figuren. */
 			for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
 				if (figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
-					const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur2));
+					const uint8_t Position = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur2));
 
 					if (TempPos == Position) return false; // TempPos passt zu Position -> Blockiert!
 				}
@@ -293,12 +293,12 @@ bool GameHelper::CanMove(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 
 	/* Überprüfe Innerhalb des Außen-Feldes. */
 	if (game->GetPosition(player, figur) + ergebnis < 41) {
-		const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur) + ergebnis);
+		const uint8_t Position = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur) + ergebnis);
 
 		/* Überprüfe außerhalb des Hauses. */
 		for (uint8_t figur2 = 0; figur2 < game->GetFigurAmount(); figur2++) {
 			if (figur2 != figur) { // Überprüfe nicht die aktuell benutzte Figur!
-				const uint8_t Position2 = GameHelper::PositionConvert(player, game->GetPosition(player, figur2));
+				const uint8_t Position2 = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur2));
 
 				if (Position == Position2) return false; // Position passt zu Position2 -> Blockiert!
 			}
@@ -428,12 +428,12 @@ bool GameHelper::CanKick(std::unique_ptr<Game> &game, uint8_t player, uint8_t fi
 	if (test == 0 || test > 40) return false; // 0 und 40 + können nicht gekickt werden.
 
 
-	const uint8_t Position = GameHelper::PositionConvert(player, game->GetPosition(player, figur));
+	const uint8_t Position = GameHelper::PositionConvert(game->GetIndex(player), game->GetPosition(player, figur));
 
 	for (uint8_t pl = 0; pl < game->GetPlayerAmount(); pl++) {
 		if (pl != player) {
 			for (uint8_t fg = 0; fg < game->GetFigurAmount(); fg++) {
-				const uint8_t Position2 = GameHelper::PositionConvert(pl, game->GetPosition(pl, fg));
+				const uint8_t Position2 = GameHelper::PositionConvert(game->GetIndex(pl), game->GetPosition(pl, fg));
 
 				if (Position2 < 41) {
 					if (Position == Position2) return true;

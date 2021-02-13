@@ -43,3 +43,23 @@ uint8_t CoreHelper::RollDice() {
 
 	return randomGenerator() % 6 + 1;
 }
+
+/*
+	Wiedergebe die Spieler-Indexes in den indexes Vector.
+
+	uint8_t pAmount: Die Spieler-Anzahl.
+*/
+std::vector<uint8_t> CoreHelper::GetIndexes(uint8_t pAmount) {
+	switch(pAmount) {
+		case 2:
+			return { 0, 2 }; // 2 Spieler: Figuren auf der Gegenseite.
+
+		case 3:
+			return { 0, 1, 2 }; // 3 Spieler: Figuren im Uhrzeigersinn.
+
+		case 4:
+			return { 0, 1, 2, 3 }; // 4 Spieler: Genauso wie 3.
+	}
+
+	return { };
+}

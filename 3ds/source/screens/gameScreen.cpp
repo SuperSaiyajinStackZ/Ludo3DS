@@ -48,20 +48,20 @@ void GameScreen::DrawPlayer(uint8_t player, bool doesAnim) const {
 
 		/* 0 --> Startfeld. */
 		if (position == 0) {
-			GFX::DrawFigure(player,
-				this->PlayerField[(player * 4) + figur].x,
-				this->PlayerField[(player * 4) + figur].y);
+			GFX::DrawFigure(this->currentGame->GetIndex(player),
+				this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].x,
+				this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].y);
 
 		} else if (position > 0 && position < 41) {
-			GFX::DrawFigure(player,
-				this->MainField[GameHelper::PositionConvert(player, position) - 1].x,
-				this->MainField[GameHelper::PositionConvert(player, position) - 1].y);
+			GFX::DrawFigure(this->currentGame->GetIndex(player),
+				this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), position) - 1].x,
+				this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), position) - 1].y);
 
 		/* Falls wir in den Eingangs-Bereich kommen. */
 		} else if (position > 40) {
-			GFX::DrawFigure(player,
-				this->EingangField[(player * 4) + (position - 41)].x,
-				this->EingangField[(player * 4) + (position - 41)].y);
+			GFX::DrawFigure(this->currentGame->GetIndex(player),
+				this->EingangField[(this->currentGame->GetIndex(player) * 4) + (position - 41)].x,
+				this->EingangField[(this->currentGame->GetIndex(player) * 4) + (position - 41)].y);
 		}
 	}
 }
@@ -75,20 +75,20 @@ void GameScreen::DrawSelection(uint8_t selection) const {
 
 			/* 0 --> Startfeld. */
 			if (position == 0) {
-				GFX::DrawPlayerSelector(player,
-					this->PlayerField[(player * 4) + figur].x,
-					this->PlayerField[(player * 4) + figur].y);
+				GFX::DrawPlayerSelector(this->currentGame->GetIndex(player),
+					this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].x,
+					this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].y);
 
 			} else if (position > 0 && position < 41) {
-				GFX::DrawPlayerSelector(player,
-					this->MainField[GameHelper::PositionConvert(player, position) - 1].x,
-					this->MainField[GameHelper::PositionConvert(player, position) - 1].y);
+				GFX::DrawPlayerSelector(this->currentGame->GetIndex(player),
+					this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), position) - 1].x,
+					this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), position) - 1].y);
 
 			/* Falls wir in den Eingangs-Bereich kommen. */
 			} else if (position > 40) {
-				GFX::DrawPlayerSelector(player,
-					this->EingangField[(player * 4) + (position - 41)].x,
-					this->EingangField[(player * 4) + (position - 41)].y);
+				GFX::DrawPlayerSelector(this->currentGame->GetIndex(player),
+					this->EingangField[(this->currentGame->GetIndex(player) * 4) + (position - 41)].x,
+					this->EingangField[(this->currentGame->GetIndex(player) * 4) + (position - 41)].y);
 			}
 	}
 }
@@ -190,8 +190,8 @@ void GameScreen::DisplaySub(void) const {
 
 		/* Zeichne die Chips als Selektoren, das ist viel besser als der alte Selektor! */
 		if (this->subSel == i) {
-			GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), 64, this->subBtn[i].y + 8);
-			GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), 238, this->subBtn[i].y + 8);
+			GFX::DrawFigure(this->currentGame->GetIndex(this->currentGame->GetCurrentPlayer()), 64, this->subBtn[i].y + 8);
+			GFX::DrawFigure(this->currentGame->GetIndex(this->currentGame->GetCurrentPlayer()), 238, this->subBtn[i].y + 8);
 		}
 	}
 
@@ -431,6 +431,8 @@ void GameScreen::PreviousFigur() {
 	if (this->currentGame->GetSelectedFigur() == 0) return; // Es gibt kein -1.
 
 	for (int8_t cFigur = this->currentGame->GetSelectedFigur() - 1; cFigur >= 0; cFigur--) {
+		if (cFigur < 0) return;
+
 		if (GameHelper::CanMove(this->currentGame, this->currentGame->GetCurrentPlayer(), cFigur, this->currentGame->GetErgebnis())) {
 			this->currentGame->SetSelectedFigur(cFigur);
 			break;
@@ -453,12 +455,12 @@ Structs::ButtonPos GameScreen::GetFigurTouchIndex(uint8_t player, uint8_t figur)
 	const uint8_t position = this->currentGame->GetPosition(player, figur);
 
 	/* 0 und 41+ haben eine spezielle handlung für die Touch Position. */
-	if (position == 0) return this->PlayerField[(player * 4) + figur];
+	if (position == 0) return this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur];
 
 	/* Feld Handling. */
-	if (position > 0 && position < 41) return this->MainField[GameHelper::PositionConvert(player, position) - 1];
+	if (position > 0 && position < 41) return this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), position) - 1];
 
-	if (position > 40) return this->EingangField[(player * 4) + (position - 41)];
+	if (position > 40) return this->EingangField[(this->currentGame->GetIndex(player) * 4) + (position - 41)];
 
 	return { 0,  0,  0,  0 };
 }
@@ -706,23 +708,23 @@ void GameScreen::FigurMovement(uint8_t player, uint8_t figur, uint8_t movement) 
 
 	/* 0 --> Startfeld. */
 	if (pos == 0) {
-		this->xPos = this->PlayerField[(player * 4) + figur].x;
-		this->yPos = this->PlayerField[(player * 4) + figur].y;
+		this->xPos = this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].x;
+		this->yPos = this->PlayerField[(this->currentGame->GetIndex(player) * 4) + figur].y;
 
 	} else if (pos > 0 && pos < 41) {
-		this->xPos = this->MainField[GameHelper::PositionConvert(player, pos) - 1].x;
-		this->yPos = this->MainField[GameHelper::PositionConvert(player, pos) - 1].y;
+		this->xPos = this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), pos) - 1].x;
+		this->yPos = this->MainField[GameHelper::PositionConvert(this->currentGame->GetIndex(player), pos) - 1].y;
 
 	/* Falls wir in den Eingangs-Bereich kommen. */
 	} else if (pos > 40) {
-		this->xPos = this->EingangField[(player * 4) + (pos - 41)].x;
-		this->yPos = this->EingangField[(player * 4) + (pos - 41)].y;
+		this->xPos = this->EingangField[(this->currentGame->GetIndex(player) * 4) + (pos - 41)].x;
+		this->yPos = this->EingangField[(this->currentGame->GetIndex(player) * 4) + (pos - 41)].y;
 	}
 
 	/* Jetzt beginnt die eigentliche Logik. */
 	uint8_t MovedPositions = 0;
 	while(toMove > 0) {
-		const std::pair<int8_t, int8_t> PosMove = AnimHelper::PlayerMovement(player, figur, pos + MovedPositions);
+		const std::pair<int8_t, int8_t> PosMove = AnimHelper::PlayerMovement(this->currentGame->GetIndex(player), figur, pos + MovedPositions);
 
 		/* Der Zeichen Teil. */
 		Gui::clearTextBufs();
@@ -739,7 +741,7 @@ void GameScreen::FigurMovement(uint8_t player, uint8_t figur, uint8_t movement) 
 		GFX::DrawSet(set_bottom_bg_idx, 0, 0);
 		GFX::DrawField();
 		this->DrawPlayers();
-		GFX::DrawFigure(this->currentGame->GetCurrentPlayer(), this->xPos, this->yPos);
+		GFX::DrawFigure(this->currentGame->GetIndex(player), this->xPos, this->yPos);
 
 		if (fadeAlpha > 0) Gui::Draw_Rect(0, 0, 320, 240, C2D_Color32(0, 0, 0, fadeAlpha));
 		C3D_FrameEnd(0);

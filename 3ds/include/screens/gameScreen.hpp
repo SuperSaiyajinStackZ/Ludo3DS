@@ -145,7 +145,7 @@ private:
 	*/
 	const std::vector<Structs::ButtonPos> PlayerField = {
 		{ 32, 166, 18, 18 },
-		{ 56, 166, 18, 40 },
+		{ 56, 166, 18, 18 },
 		{ 32, 190, 18, 18 },
 		{ 56, 190, 18, 18 },
 

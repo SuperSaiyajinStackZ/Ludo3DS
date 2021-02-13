@@ -93,6 +93,9 @@ public:
 	bool GetDone(uint8_t player, uint8_t figur) const;
 	void SetDone(uint8_t player, uint8_t figur, bool isDone);
 
+	/* Wiedergebe den Spieler-Index. */
+	uint8_t GetIndex(uint8_t player) const;
+
 	/* Wiedergebe und Setze den Aktuellen Spieler. */
 	uint8_t GetCurrentPlayer() const { return this->CurrentPlayer; };
 	void SetCurrentPlayer(uint8_t p) { this->CurrentPlayer = p; };

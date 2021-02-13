@@ -30,6 +30,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <vector>
 
 inline std::mt19937 randomGenerator; // Zufalls-Generator für den Würfel.
 #define MAX_FIELD 44 // 0 -> Haus, 1 - 40 -> Feld, 41 - 44 - Eingang.
@@ -39,6 +40,7 @@ inline std::mt19937 randomGenerator; // Zufalls-Generator für den Würfel.
 namespace CoreHelper {
 	void GenerateSeed();
 	uint8_t RollDice();
+	std::vector<uint8_t> GetIndexes(uint8_t pAmount);
 };
 
 #endif

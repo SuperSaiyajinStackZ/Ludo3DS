@@ -58,8 +58,9 @@ void Game::InitNewGame(uint8_t playerAmount, uint8_t figurAmount, uint8_t diceRo
 	this->DiceRolls = diceRolls;
 	this->AVLDiceRolls = this->DiceRolls;
 
+	const std::vector<uint8_t> Indexes = CoreHelper::GetIndexes(playerAmount);
 	for (uint8_t i = 0; i < playerAmount; i++) {
-		this->Players[i] = std::make_unique<Player>(figurAmount);
+		this->Players[i] = std::make_unique<Player>(figurAmount, Indexes[i]);
 	}
 
 	this->GameData = std::make_unique<uint8_t[]>(_GAME_SIZE);
@@ -113,9 +114,10 @@ void Game::convertDataToGame() {
 			this->FigurAmount = this->GameData.get()[_GAME_FIGUR_AMOUNT];
 		}
 
+		const std::vector<uint8_t> Indexes = CoreHelper::GetIndexes(this->PlayerAmount);
 		/* Initialisiere die Spieler-Zeiger. */
 		for (uint8_t i = 0; i < this->PlayerAmount; i++) {
-			this->Players[i] = std::make_unique<Player>(this->FigurAmount);
+			this->Players[i] = std::make_unique<Player>(this->FigurAmount, Indexes[i]);
 		}
 
 		/* Der Spieler Teil. */
@@ -246,4 +248,15 @@ void Game::SetDone(uint8_t player, uint8_t figur, bool isDone) {
 	if (player > this->PlayerAmount) return;
 
 	this->Players[player]->SetDone(figur, isDone);
+}
+
+/*
+	Wiedergebe den Index des Spielers.
+
+	uint8_t player: Der Spieler.
+*/
+uint8_t Game::GetIndex(uint8_t player) const {
+	if (player > this->PlayerAmount) return 0;
+
+	return this->Players[player]->GetIndex();
 }

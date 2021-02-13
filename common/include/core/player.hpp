@@ -31,15 +31,18 @@
 
 class Player {
 public:
-	Player(uint8_t figurAmount);
+	Player(uint8_t figurAmount, uint8_t Index);
 
 	uint8_t GetPosition(uint8_t figur) const;
 	void SetPosition(uint8_t figur, uint8_t position);
 
 	bool GetDone(uint8_t figur) const;
 	void SetDone(uint8_t figur, bool isDone);
+
+	uint8_t GetIndex() const { return this->Index; };
 private:
 	std::unique_ptr<Figur> Figuren[4]; // 4 Figuren sind maximal.
+	uint8_t Index = 0;
 };
 
 #endif

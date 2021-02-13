@@ -31,7 +31,9 @@
 
 	uint8_t figurAmount: Die Anzahl der Figuren.
 */
-Player::Player(uint8_t figurAmount) {
+Player::Player(uint8_t figurAmount, uint8_t Index) {
+	this->Index = Index;
+
 	for (uint8_t i = 0; i < figurAmount; i++) {
 		this->Figuren[i] = std::make_unique<Figur>();
 	}
